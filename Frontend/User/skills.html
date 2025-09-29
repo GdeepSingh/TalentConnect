@@ -1,0 +1,63 @@
+<!-- =========================================================================
+     TalentConnect – Step 4: Skills & Other Info (Desktop)
+     Purpose: Capture skills (comma separated), languages, phone, city.
+     ========================================================================= -->
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Skills & Other Info • TalentConnect</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-header__inner">
+      <div class="brand"><div class="brand__logo"></div><div class="brand__name">TalentConnect</div></div>
+      <div class="muted">Step <strong>4</strong> of 4</div>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- Stepper (Steps 1–3 done; Step 4 active) -->
+    <div class="stepper">
+      <div class="stepper__dot stepper__dot--done"></div>
+      <div class="stepper__dot stepper__dot--done"></div>
+      <div class="stepper__dot stepper__dot--done"></div>
+      <div class="stepper__dot stepper__dot--active"></div>
+    </div>
+
+    <section class="card" aria-labelledby="skillsTitle">
+      <h1 id="skillsTitle" class="card__title">Skills & other info</h1>
+      <p class="card__note">Add a few skills (comma-separated). Languages are optional.</p>
+
+      <form novalidate>
+        <!-- Skills -->
+        <label for="skills">Skills</label>
+        <textarea id="skills" rows="3" placeholder="e.g., Java, PHP, SQL, Communication"></textarea>
+
+        <!-- Languages -->
+        <label for="languages">Languages</label>
+        <textarea id="languages" rows="2" placeholder="e.g., English: Fluent; Punjabi: Native"></textarea>
+
+        <!-- Phone + City -->
+        <div class="row">
+          <div>
+            <label for="phone">Phone (optional)</label>
+            <input id="phone" type="text" placeholder="+1 604 555 1234" />
+          </div>
+          <div>
+            <label for="city">City (optional)</label>
+            <input id="city" type="text" placeholder="Vancouver, BC" />
+          </div>
+        </div>
+
+        <div class="actions">
+          <a class="btn btn--primary" href="done.html">Finish →</a>
+        </div>
+      </form>
+    </section>
+  </main>
+
+  <footer class="site-footer">© 2025 TalentConnect</footer>
+</body>
+</html>

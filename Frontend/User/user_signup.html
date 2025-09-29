@@ -1,0 +1,71 @@
+<!-- =========================================================================
+     TalentConnect – Step 1: Sign Up (Desktop)
+     Purpose: Collect name, email, password, re-type password
+     This is UI-only; hook up action/JS later as needed.
+     ========================================================================= -->
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Sign Up • TalentConnect</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body>
+  <!-- Top brand/header -->
+  <header class="site-header" role="banner" aria-label="Site header">
+    <div class="site-header__inner">
+      <div class="brand">
+        <div class="brand__logo" aria-hidden="true"></div>
+        <div class="brand__name">TalentConnect</div>
+      </div>
+      <div class="muted">Already have an account? <a href="login.html">Log in</a></div>
+    </div>
+  </header>
+
+  <!-- Main content container -->
+  <main class="container" role="main">
+    <!-- Stepper shows overall progress (Step 1 active) -->
+    <div class="stepper" aria-label="Signup steps">
+      <div class="stepper__dot stepper__dot--active" title="Step 1"></div>
+      <div class="stepper__dot" title="Step 2"></div>
+      <div class="stepper__dot" title="Step 3"></div>
+      <div class="stepper__dot" title="Step 4"></div>
+    </div>
+
+    <!-- Card with the actual form -->
+    <section class="card" aria-labelledby="signupTitle">
+      <h1 id="signupTitle" class="card__title">Create your account</h1>
+      <p class="card__note">Use an email you check often. Password must be 8+ characters.</p>
+
+      <!-- Form (no action yet; wire up later to PHP or API) -->
+      <form novalidate>
+        <!-- Name -->
+        <label for="name">Full Name</label>
+        <input id="name" name="name" type="text" placeholder="e.g., Guranshdeep Singh" />
+
+        <!-- Email -->
+        <label for="email">Email Address</label>
+        <input id="email" name="email" type="email" placeholder="you@example.com" />
+
+        <!-- Passwords -->
+        <label for="password">Password</label>
+        <input id="password" name="password" type="password" placeholder="8+ characters, number & symbol" />
+
+        <label for="confirm">Re-type Password</label>
+        <input id="confirm" name="confirm" type="password" placeholder="Repeat password" />
+
+        <!-- Actions -->
+        <div class="actions">
+          <!-- Secondary/ghost cancels (no link) -->
+          <button class="btn btn--ghost" type="button">Cancel</button>
+          <!-- Primary continues to Step 2 (link to experience.html for demo) -->
+          <a class="btn btn--primary" href="experience.html">Create Account →</a>
+        </div>
+      </form>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer">© 2025 TalentConnect</footer>
+</body>
+</html>

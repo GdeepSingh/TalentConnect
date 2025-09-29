@@ -1,0 +1,72 @@
+<!-- =========================================================================
+     TalentConnect – Step 3: Education (Desktop)
+     Purpose: Add education entries; continue to Skills & Other Info.
+     ========================================================================= -->
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Education • TalentConnect</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-header__inner">
+      <div class="brand"><div class="brand__logo"></div><div class="brand__name">TalentConnect</div></div>
+      <div class="muted">Step <strong>3</strong> of 4</div>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- Stepper (Steps 1–2 done; Step 3 active) -->
+    <div class="stepper">
+      <div class="stepper__dot stepper__dot--done"></div>
+      <div class="stepper__dot stepper__dot--done"></div>
+      <div class="stepper__dot stepper__dot--active"></div>
+      <div class="stepper__dot"></div>
+    </div>
+
+    <section class="card" aria-labelledby="eduTitle">
+      <h1 id="eduTitle" class="card__title">Education</h1>
+      <p class="card__note">Add your most recent education. You can add more later.</p>
+
+      <form novalidate>
+        <!-- School -->
+        <label for="school">School / College</label>
+        <input id="school" type="text" placeholder="e.g., Langara College" />
+
+        <!-- Degree + Field -->
+        <div class="row">
+          <div>
+            <label for="degree">Degree</label>
+            <input id="degree" type="text" placeholder="e.g., Diploma, B.Sc." />
+          </div>
+          <div>
+            <label for="field">Field of Study</label>
+            <input id="field" type="text" placeholder="e.g., Computer Science" />
+          </div>
+        </div>
+
+        <!-- Years -->
+        <div class="row">
+          <div>
+            <label for="startYear">Start Year</label>
+            <input id="startYear" type="number" min="1900" max="2100" placeholder="2023" />
+          </div>
+          <div>
+            <label for="endYear">End Year</label>
+            <input id="endYear" type="number" min="1900" max="2100" placeholder="2025" />
+          </div>
+        </div>
+
+        <div class="actions">
+          <button class="btn btn--ghost" type="button">Save & Add Another</button>
+          <a class="btn btn--primary" href="skills.html">Save & Continue →</a>
+        </div>
+      </form>
+    </section>
+  </main>
+
+  <footer class="site-footer">© 2025 TalentConnect</footer>
+</body>
+</html>

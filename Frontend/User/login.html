@@ -1,0 +1,138 @@
+<!-- =========================================================================
+     TalentConnect – Log In (Desktop)
+     Uses the same styles.css (purple + baby blue + white)
+     Notes:
+       - Replace the <a> "Log in" with a real <button type="submit"> and
+         add an action to your PHP endpoint when you wire up the backend.
+       - Includes a tiny JS snippet to toggle password visibility.
+     ======================================================================= -->
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Log In • TalentConnect</title>
+
+  <!-- Reuse the same theme file you created earlier -->
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body>
+  <!-- ===== Header / Brand bar (sticky) ===== -->
+  <header class="site-header" role="banner" aria-label="Site header">
+    <div class="site-header__inner">
+      <!-- Brand block -->
+      <div class="brand">
+        <div class="brand__logo" aria-hidden="true"></div>
+        <div class="brand__name">TalentConnect</div>
+      </div>
+
+      <!-- Quick switch to Sign Up -->
+      <div class="muted">New here? <a href="signup.html">Create an account</a></div>
+    </div>
+  </header>
+
+  <!-- ===== Main content area ===== -->
+  <main class="container" role="main">
+    <!-- (Optional) stepper omitted for login to keep it clean -->
+
+    <!-- Card wrapper for the login form -->
+    <section class="card" aria-labelledby="loginTitle">
+      <h1 id="loginTitle" class="card__title">Welcome back</h1>
+      <p class="card__note">Log in to continue building your profile and applying to jobs.</p>
+
+      <!--
+        Form is UI-only for now:
+          - When wiring to PHP, set: method="post" action="/api/login.php"
+          - Replace the <a> submit link with a real <button type="submit">.
+      -->
+      <form id="loginForm" novalidate>
+
+        <!-- Email field -->
+        <label for="email">Email address</label>
+        <input
+          id="email"
+          name="email"
+          type="email"
+          placeholder="you@example.com"
+          autocomplete="username"
+          required
+        />
+
+        <!-- Password field + show/hide toggle aligned to the right -->
+        <label for="password" style="display:flex;justify-content:space-between;align-items:center;">
+          <span>Password</span>
+          <!-- Tiny toggle button; styled minimally by default theme -->
+          <button id="togglePwd" type="button" class="btn" style="height:32px;padding:0 10px;">Show</button>
+        </label>
+        <input
+          id="password"
+          name="password"
+          type="password"
+          placeholder="Enter your password"
+          autocomplete="current-password"
+          required
+        />
+
+        <!-- Utility row: remember + forgot -->
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;">
+          <label style="display:flex;gap:8px;align-items:center;color:var(--muted);">
+            <input type="checkbox" id="remember" />
+            Keep me signed in
+          </label>
+          <a href="#" class="card__note">Forgot password?</a>
+        </div>
+
+        <!-- Actions: use anchor for demo navigation only -->
+        <div class="actions">
+          <!--
+            When you connect to PHP, swap this <a> with:
+              <button class="btn btn--primary" type="submit">Log in</button>
+          -->
+          <a class="btn btn--primary" href="#">Log in</a>
+          <a class="btn btn--ghost" href="user_signup.html">Create account</a>
+        </div>
+
+        <!-- Inline form hint / error placeholder (fill with JS or server errors) -->
+        <p id="msg" class="card__note" style="margin-top:10px;"></p>
+      </form>
+    </section>
+  </main>
+
+  <!-- ===== Footer ===== -->
+  <footer class="site-footer">© 2025 TalentConnect</footer>
+
+  <!-- ===== Minimal interactivity: toggle password + basic front-end checks ===== -->
+  <script>
+    // Toggle password visibility (Show/Hide)
+    const toggleBtn = document.getElementById('togglePwd');
+    const pwdInput  = document.getElementById('password');
+    toggleBtn.addEventListener('click', () => {
+      const isHidden = pwdInput.type === 'password';
+      pwdInput.type = isHidden ? 'text' : 'password';
+      toggleBtn.textContent = isHidden ? 'Hide' : 'Show';
+      pwdInput.focus();
+    });
+
+    // (Optional) Example front-end validation to show a friendly message.
+    // Remove or adapt when wiring to your PHP endpoint.
+    const form = document.getElementById('loginForm');
+    const msg  = document.getElementById('msg');
+    form.addEventListener('submit', (e) => {
+      // Prevent default only for the static demo.
+      e.preventDefault();
+
+      // Very light checks — server must still validate everything.
+      const email = document.getElementById('email').value.trim();
+      const pass  = pwdInput.value;
+
+      if (!email || !pass) {
+        msg.textContent = 'Please enter your email and password.';
+        msg.style.color = '#b91c1c'; // red for emphasis
+        return;
+      }
+
+      // On a real app, let the browser submit to PHP here.
+      // Example: form.submit();
+    });
+  </script>
+</body>
+</html>

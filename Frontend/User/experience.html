@@ -1,0 +1,84 @@
+<!-- =========================================================================
+     TalentConnect – Step 2: Work Experience (Desktop)
+     Purpose: Add at least one role. Save & continue to Education.
+     ========================================================================= -->
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Work Experience • TalentConnect</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-header__inner">
+      <div class="brand"><div class="brand__logo"></div><div class="brand__name">TalentConnect</div></div>
+      <div class="muted">Step <strong>2</strong> of 4</div>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- Stepper (Step 2 active; Step 1 done) -->
+    <div class="stepper">
+      <div class="stepper__dot stepper__dot--done" title="Step 1 done"></div>
+      <div class="stepper__dot stepper__dot--active" title="Step 2"></div>
+      <div class="stepper__dot" title="Step 3"></div>
+      <div class="stepper__dot" title="Step 4"></div>
+    </div>
+
+    <section class="card" aria-labelledby="expTitle">
+      <h1 id="expTitle" class="card__title">Work Experience</h1>
+      <p class="card__note">Add your most recent role. You can add more later.</p>
+
+      <form novalidate>
+        <!-- Title + Company -->
+        <label for="jobTitle">Job Title</label>
+        <input id="jobTitle" type="text" placeholder="e.g., Sales Associate" />
+
+        <label for="company">Company</label>
+        <input id="company" type="text" placeholder="e.g., Adidas" />
+
+        <!-- Location + Current toggle (simplified as select) -->
+        <div class="row">
+          <div>
+            <label for="location">Location</label>
+            <input id="location" type="text" placeholder="City, Country" />
+          </div>
+          <div>
+            <label for="current">Currently working here?</label>
+            <select id="current">
+              <option>No</option>
+              <option>Yes</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Dates -->
+        <div class="row">
+          <div>
+            <label for="start">Start Date</label>
+            <input id="start" type="date" />
+          </div>
+          <div>
+            <label for="end">End Date</label>
+            <input id="end" type="date" />
+          </div>
+        </div>
+
+        <!-- Description -->
+        <label for="desc">Description (optional)</label>
+        <textarea id="desc" rows="4" placeholder="Key responsibilities, achievements…"></textarea>
+
+        <div class="actions">
+          <!-- Add another (stays on page in real app) -->
+          <button class="btn btn--ghost" type="button">Save & Add Another</button>
+          <!-- Continue to next step -->
+          <a class="btn btn--primary" href="education.html">Save & Continue →</a>
+        </div>
+      </form>
+    </section>
+  </main>
+
+  <footer class="site-footer">© 2025 TalentConnect</footer>
+</body>
+</html>

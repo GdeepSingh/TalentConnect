@@ -1,0 +1,155 @@
+/* ==========================================================================
+   TalentConnect – Desktop UI Theme
+   Palette: Purple (#7C3AED), Baby Blue (#60A5FA), Slate text, soft surfaces
+   Notes: Desktop-first (≥1024px). Add your own media queries if needed.
+   ========================================================================== */
+
+:root{
+  /* --- Brand tokens --- */
+  --bg: #F5F7FB;            /* page background */
+  --panel: #FFFFFF;         /* card/background */
+  --ink: #0F172A;           /* main text (slate-900) */
+  --muted: #64748B;         /* secondary text (slate-500/600) */
+  --border: #E5E7EB;        /* subtle borders */
+  --purple: #7C3AED;        /* primary action */
+  --blue: #60A5FA;          /* accent / secondary */
+  --success: #16A34A;       /* success green (done page confetti tone) */
+
+  --radius: 14px;           /* rounded corners for cards/inputs/buttons */
+  --container: 1120px;      /* desktop container width */
+}
+
+/* --- Reset-ish --- */
+*{ box-sizing: border-box; }
+html, body{ height: 100%; }
+body{
+  margin-left: auto;
+  margin-right: auto;
+  font: 16px/1.5 system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+  color: var(--ink);
+  background: var(--bg);
+}
+
+/* --- Top navigation (simple employer/candidate neutral bar) --- */
+.site-header{
+  position: sticky; top: 0; z-index: 10;
+  background: var(--panel);
+  border-bottom: 1px solid var(--border);
+}
+.site-header__inner{
+  width: var(--container);
+  margin: 0 auto;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.brand{
+  display: flex; align-items: center; gap: .6rem;
+  font-weight: 700;
+}
+.brand__logo{
+  width: 28px; height: 28px; border-radius: 8px;
+  background: linear-gradient(135deg, var(--purple), var(--blue));
+}
+.brand__name{ letter-spacing: .2px; }
+
+/* --- Layout wrapper for each page --- */
+.container{
+  width: var(--container);
+  margin: 40px auto;
+  padding: 0 16px;
+}
+
+/* --- Step indicator (tiny, simple) --- */
+.stepper{
+  display: flex; align-items: center; gap: 8px;
+  color: var(--muted); font-size: 14px; margin-bottom: 14px;
+}
+.stepper__dot{
+  width: 8px; height: 8px; border-radius: 999px; background: var(--border);
+}
+.stepper__dot--active{ background: var(--purple); }
+.stepper__dot--done{ background: var(--blue); }
+
+/* --- Card pattern used by all screens --- */
+.card{
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: 0 10px 28px rgba(2,8,23,.06);
+  padding: 22px;
+  width: 640px;               /* desktop form width */
+  margin-left: auto;
+  margin-right: auto;
+}
+.card__title{
+  margin: 4px 0 8px;
+  font-size: 26px; line-height: 1.15;
+}
+.card__note{ color: var(--muted); font-size: 14px; margin-bottom: 6px; }
+
+/* --- Form controls --- */
+label{ display:block; margin: 14px 0 6px; color: var(--muted); }
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="date"],
+input[type="number"],
+textarea,
+select{
+  width: 100%;
+  padding: 12px 12px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: #FFF;
+  outline: none;
+}
+textarea{ resize: vertical; }
+
+/* focus state for accessibility */
+input:focus, textarea:focus, select:focus{
+  border-color: color-mix(in oklab, var(--purple) 45%, var(--blue));
+  box-shadow: 0 0 0 4px color-mix(in oklab, var(--purple) 25%, transparent);
+}
+
+/* grid row for two-up fields */
+.row{ display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+/* --- Buttons --- */
+.btn{
+  display: inline-flex; align-items: center; justify-content: center; gap: .5rem;
+  height: 44px; padding: 0 16px; border-radius: 12px;
+  border: 1px solid var(--border); background: #FFF; color: var(--ink);
+  cursor: pointer; user-select: none; text-decoration: none;
+}
+.btn--primary{
+  border-color: color-mix(in oklab, var(--purple) 55%, var(--blue));
+  background: linear-gradient(180deg,
+    color-mix(in oklab, var(--purple) 28%, white),
+    color-mix(in oklab, var(--blue) 18%, white)
+  );
+  color: #FFF;
+}
+.btn--ghost{
+  background: #FFF; color: var(--ink);
+}
+.actions{ display: flex; gap: 10px; margin-top: 16px; }
+
+/* --- Footer --- */
+.site-footer{
+  width: var(--container);
+  margin: 32px auto 64px; padding: 0 16px;
+  color: var(--muted); font-size: 13px;
+}
+
+/* --- Success card special styling --- */
+.success{
+  display:flex; align-items:center; gap: 16px;
+}
+.success__badge{
+  width: 44px; height: 44px; border-radius: 12px;
+  background: linear-gradient(135deg, var(--blue), var(--purple));
+}
+.success__title{ font-size: 28px; margin: 0; }
