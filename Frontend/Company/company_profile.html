@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Company Profile · TalentConnect</title>
+  <link rel="stylesheet" href="../css/style.css"/>
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-header__inner">
+      <a href="company_dashboard.html" class="brand" style="text-decoration:none;color:inherit;">
+        <span class="brand__logo" aria-hidden="true"></span>
+        <span class="brand__name">TalentConnect</span>
+      </a>
+      <nav style="display:flex;gap:12px;">
+        <a class="btn btn--ghost" href="company_dashboard.html">Dashboard</a>
+        <a class="btn btn--ghost" href="post_job.html">Post a Job</a>
+        <a class="btn btn--ghost" href="manage_jobs.html">Manage Jobs</a>
+        <a class="btn btn--ghost" href="applicants.html">Applicants</a>
+        <a class="btn btn--ghost" href="company_profile.html">Company Profile</a>
+        <a class="btn" href="company_login.html">Sign out</a>
+      </nav>
+    </div>
+  </header>
+  <main class="container">
+
+  <div class="card">
+    <p class="card__title">Company Profile</p>
+    <p class="card__note">Keep your company information up to date for candidates.</p>
+
+    <form action="done.html" method="get">
+      <div class="row">
+        <div>
+          <label for="cName">Company Name</label>
+          <input type="text" id="cName" name="cName" placeholder="Your Company Inc." />
+        </div>
+        <div>
+          <label for="cIndustry">Industry</label>
+          <input type="text" id="cIndustry" name="cIndustry" placeholder="Software, Retail, Healthcare…" />
+        </div>
+      </div>
+
+      <div class="row">
+        <div>
+          <label for="cWebsite">Website</label>
+          <input type="text" id="cWebsite" name="cWebsite" placeholder="https://yourcompany.com" />
+        </div>
+        <div>
+          <label for="cLocation">HQ Location</label>
+          <input type="text" id="cLocation" name="cLocation" placeholder="City, Country" />
+        </div>
+      </div>
+
+      <div class="row">
+        <div>
+          <label for="linkedIn">LinkedIn</label>
+          <input type="text" id="linkedIn" name="linkedIn" placeholder="https://linkedin.com/company/yourcompany" />
+        </div>
+        <div>
+          <label for="careers">Careers Page</label>
+          <input type="text" id="careers" name="careers" placeholder="https://yourcompany.com/careers" />
+        </div>
+      </div>
+
+      <label for="logo">Logo (URL)</label>
+      <input type="text" id="logo" name="logo" placeholder="https://…/logo.png" />
+
+      <label for="cAbout">About</label>
+      <textarea id="cAbout" name="cAbout" rows="5" placeholder="Describe your mission, values, and products."></textarea>
+
+      <label for="benefits">Benefits</label>
+      <textarea id="benefits" name="benefits" rows="4" placeholder="Health, dental, RRSP match, education stipend, etc."></textarea>
+
+      <div class="actions">
+        <a class="btn" href="company_dashboard.html">Cancel</a>
+        <button class="btn btn--primary" type="submit">Save Changes</button>
+      </div>
+    </form>
+  </div>
+
+  </main>
+  <footer class="site-footer">
+    <p>© 2025 TalentConnect · Employers Portal</p>
+  </footer>
+</body>
+</html>
+

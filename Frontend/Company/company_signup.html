@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Company Sign Up · TalentConnect</title>
+  <link rel="stylesheet" href="../css/style.css"/>
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-header__inner">
+      <a href="company_dashboard.html" class="brand" style="text-decoration:none;color:inherit;">
+        <span class="brand__logo" aria-hidden="true"></span>
+        <span class="brand__name">TalentConnect</span>
+      </a>
+      <nav style="display:flex;gap:12px;">
+        <a class="btn btn--ghost" href="company_dashboard.html">Dashboard</a>
+        <a class="btn btn--ghost" href="post_job.html">Post a Job</a>
+        <a class="btn btn--ghost" href="manage_jobs.html">Manage Jobs</a>
+        <a class="btn btn--ghost" href="applicants.html">Applicants</a>
+        <a class="btn btn--ghost" href="company_profile.html">Company Profile</a>
+        <a class="btn" href="company_login.html">Sign out</a>
+      </nav>
+    </div>
+  </header>
+  <main class="container">
+
+  <div class="card">
+    <p class="card__title">Create Employer Account</p>
+    <p class="card__note">List jobs, manage applicants, and build your company brand.</p>
+
+    <form action="company_dashboard.html" method="get">
+      <div class="row">
+        <div>
+          <label for="companyName">Company Name</label>
+          <input type="text" id="companyName" name="companyName" placeholder="Your Company Inc." required/>
+        </div>
+        <div>
+          <label for="industry">Industry</label>
+          <input type="text" id="industry" name="industry" placeholder="Software, Retail, Healthcare…" />
+        </div>
+      </div>
+
+      <div class="row">
+        <div>
+          <label for="companyEmail">Work Email</label>
+          <input type="email" id="companyEmail" name="companyEmail" placeholder="talent@yourcompany.com" required/>
+        </div>
+        <div>
+          <label for="size">Company Size</label>
+          <select id="size" name="size">
+            <option value="">Select size</option>
+            <option>1–10</option>
+            <option>11–50</option>
+            <option>51–200</option>
+            <option>201–500</option>
+            <option>500+</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="row">
+        <div>
+          <label for="website">Website</label>
+          <input type="text" id="website" name="website" placeholder="https://yourcompany.com"/>
+        </div>
+        <div>
+          <label for="location">HQ Location</label>
+          <input type="text" id="location" name="location" placeholder="City, Country"/>
+        </div>
+      </div>
+
+      <label for="about">About Company</label>
+      <textarea id="about" name="about" rows="4" placeholder="1–2 paragraphs about your mission, product, and culture."></textarea>
+
+      <div class="actions">
+        <a class="btn" href="company_login.html">Already have an account?</a>
+        <button class="btn btn--primary" type="submit">Create Account</button>
+      </div>
+    </form>
+  </div>
+
+  </main>
+  <footer class="site-footer">
+    <p>© 2025 TalentConnect · Employers Portal</p>
+  </footer>
+</body>
+</html>
+

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Job Published · TalentConnect</title>
+  <link rel="stylesheet" href="../css/style.css"/>
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-header__inner">
+      <a href="company_dashboard.html" class="brand">
+        <span class="brand__logo" aria-hidden="true"></span>
+        <span class="brand__name">TalentConnect</span>
+      </a>
+      <nav style="display:flex;gap:12px;">
+        <a class="btn btn--ghost" href="company_dashboard.html">Dashboard</a>
+        <a class="btn btn--ghost" href="post_job.html">Post a Job</a>
+        <a class="btn btn--ghost" href="manage_jobs.html">Manage Jobs</a>
+        <a class="btn btn--ghost" href="applicants.html">Applicants</a>
+        <a class="btn btn--ghost" href="company_profile.html">Company Profile</a>
+        <a class="btn" href="company_login.html">Sign out</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="card" style="text-align:center;">
+      <p class="card__title" id="successTitle">Job Published Successfully!</p>
+      <p class="card__note" id="jobSummary">Your job is live.</p>
+
+      <div class="actions" style="justify-content:center; margin-top:1rem;">
+        <a class="btn btn--primary" href="manage_jobs.html">Go to Manage Jobs</a>
+        <a class="btn" href="post_job.html">Post Another Job</a>
+        <a class="btn" href="company_dashboard.html">Back to Dashboard</a>
+      </div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <p>© 2025 TalentConnect · Employers Portal</p>
+  </footer>
+
+  <script>
+    // Display a small summary of the last published job
+    function getJobs(){
+      try { return JSON.parse(localStorage.getItem('tc_jobs')) || []; }
+      catch(e){ return []; }
+    }
+    const lastId = localStorage.getItem('tc_last_published_job_id');
+    const jobs = getJobs();
+    const job = jobs.find(j => j.id === lastId);
+
+    if(job){
+      const t = document.getElementById('successTitle');
+      const s = document.getElementById('jobSummary');
+      t.textContent = '🎉 Job Published Successfully!';
+      s.textContent = `${job.title} · ${job.location || 'Location N/A'} · ${job.type}`;
+    }
+  </script>
+</body>
+</html>

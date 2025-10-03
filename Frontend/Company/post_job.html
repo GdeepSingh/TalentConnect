@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Post a Job · TalentConnect</title>
+  <link rel="stylesheet" href="../css/style.css"/>
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-header__inner">
+      <a href="company_dashboard.html" class="brand">
+        <span class="brand__logo" aria-hidden="true"></span>
+        <span class="brand__name">TalentConnect</span>
+      </a>
+      <nav style="display:flex;gap:12px;">
+        <a class="btn btn--ghost" href="company_dashboard.html">Dashboard</a>
+        <a class="btn btn--ghost" href="post_job.html">Post a Job</a>
+        <a class="btn btn--ghost" href="manage_jobs.html">Manage Jobs</a>
+        <a class="btn btn--ghost" href="applicants.html">Applicants</a>
+        <a class="btn btn--ghost" href="company_profile.html">Company Profile</a>
+        <a class="btn" href="company_login.html">Sign out</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="card">
+      <p class="card__title">Post a New Job</p>
+      <p class="card__note">Write a clear, concise description to attract qualified candidates.</p>
+
+      <form id="jobForm">
+        <label for="title">Job Title</label>
+        <input type="text" id="title" name="title" placeholder="e.g., Frontend Developer" required/>
+
+        <div class="row">
+          <div>
+            <label for="jobLocation">Location</label>
+            <input type="text" id="jobLocation" name="jobLocation" placeholder="e.g., Vancouver, BC or Remote"/>
+          </div>
+          <div>
+            <label for="type">Employment Type</label>
+            <select id="type" name="type" required>
+              <option value="">Select type</option>
+              <option>Full-time</option>
+              <option>Part-time</option>
+              <option>Contract</option>
+              <option>Internship</option>
+              <option>Co-op</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="row">
+          <div>
+            <label for="experience">Experience Level</label>
+            <select id="experience" name="experience">
+              <option>Entry</option>
+              <option>Intermediate</option>
+              <option>Senior</option>
+              <option>Lead</option>
+            </select>
+          </div>
+          <div>
+            <label for="category">Category</label>
+            <input type="text" id="category" name="category" placeholder="e.g., Engineering, Design, Data"/>
+          </div>
+        </div>
+
+        <div class="row">
+          <div>
+            <label for="minSalary">Min Salary</label>
+            <input type="number" id="minSalary" name="minSalary" placeholder="e.g., 60000"/>
+          </div>
+          <div>
+            <label for="maxSalary">Max Salary</label>
+            <input type="number" id="maxSalary" name="maxSalary" placeholder="e.g., 95000"/>
+          </div>
+        </div>
+
+        <label for="description">Job Description</label>
+        <textarea id="description" name="description" rows="6" placeholder="Responsibilities, qualifications, benefits…"></textarea>
+
+        <label for="requirements">Key Requirements</label>
+        <textarea id="requirements" name="requirements" rows="4" placeholder="3–7 bullet points of must-haves and nice-to-haves."></textarea>
+
+        <div class="row">
+          <div>
+            <label for="deadline">Application Deadline</label>
+            <input type="date" id="deadline" name="deadline"/>
+          </div>
+          <div>
+            <label for="applyLink">Apply Link (optional)</label>
+            <input type="text" id="applyLink" name="applyLink" placeholder="URL or leave blank for in-app apply"/>
+          </div>
+        </div>
+
+        <div class="actions">
+          <a class="btn" href="manage_jobs.html">Cancel</a>
+          <button class="btn btn--primary" type="submit">Publish Job</button>
+        </div>
+      </form>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <p>© 2025 TalentConnect · Employers Portal</p>
+  </footer>
+
+  <script>
+    // Save job to localStorage then redirect to confirmation
+    const form = document.getElementById('jobForm');
+
+    function getJobs(){
+      try { return JSON.parse(localStorage.getItem('tc_jobs')) || []; }
+      catch(e){ return []; }
+    }
+    function setJobs(jobs){
+      localStorage.setItem('tc_jobs', JSON.stringify(jobs));
+    }
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      const job = {
+        id: Date.now().toString(), // simple unique id
+        title: document.getElementById('title').value.trim(),
+        location: document.getElementById('jobLocation').value.trim(),
+        type: document.getElementById('type').value,
+        experience: document.getElementById('experience').value,
+        category: document.getElementById('category').value.trim(),
+        minSalary: document.getElementById('minSalary').value,
+        maxSalary: document.getElementById('maxSalary').value,
+        description: document.getElementById('description').value.trim(),
+        requirements: document.getElementById('requirements').value.trim(),
+        deadline: document.getElementById('deadline').value,
+        applyLink: document.getElementById('applyLink').value.trim(),
+        status: 'Open',
+        createdAt: new Date().toISOString()
+      };
+
+      const jobs = getJobs();
+      jobs.unshift(job); // newest first
+      setJobs(jobs);
+      localStorage.setItem('tc_last_published_job_id', job.id);
+
+      // redirect
+      window.location.href = 'job_published.html';
+    });
+  </script>
+</body>
+</html>

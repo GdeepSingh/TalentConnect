@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Applicants · TalentConnect</title>
+  <link rel="stylesheet" href="../css/style.css"/>
+  <style>
+    /* small helpers so it works with your main style.css */
+    .nav{display:flex;gap:12px}
+    .grid{display:grid;gap:12px}
+    .grid-cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+    @media (max-width:900px){.grid-cols-2{grid-template-columns:1fr}}
+    .muted{color:#6b7280}
+    .inline-actions{display:flex;gap:.5rem;flex-wrap:wrap}
+    .pill{display:inline-block;padding:.2rem .6rem;border-radius:999px;font-size:.8rem}
+    .pill--ok{background:#dcfce7;color:#166534}
+    .pill--bad{background:#fee2e2;color:#991b1b}
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-header__inner">
+      <a href="company_dashboard.html" class="brand">
+        <span class="brand__logo" aria-hidden="true"></span>
+        <span class="brand__name">TalentConnect</span>
+      </a>
+      <nav class="nav">
+        <a class="btn btn--ghost" href="company_dashboard.html">Dashboard</a>
+        <a class="btn btn--ghost" href="post_job.html">Post a Job</a>
+        <a class="btn btn--ghost" href="manage_jobs.html">Manage Jobs</a>
+        <a class="btn btn--ghost" href="applicants.html">Applicants</a>
+        <a class="btn btn--ghost" href="company_profile.html">Company Profile</a>
+        <a class="btn" href="company_login.html">Sign out</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="card">
+      <p class="card__title">Applicants</p>
+      <p class="card__note">Filter and review candidates for your roles.</p>
+
+      <!-- Filter bar -->
+      <div class="row">
+        <div>
+          <label for="jobFilter">Select Job</label>
+          <select id="jobFilter"></select>
+        </div>
+        <div>
+          <label for="statusFilter">Applicant Status</label>
+          <select id="statusFilter">
+            <option value="ALL">All</option>
+            <option value="NEW">New</option>
+            <option value="SHORTLISTED">Shortlisted</option>
+            <option value="REJECTED">Rejected</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Summary -->
+      <div id="summary" class="muted" style="margin-bottom:12px;">&nbsp;</div>
+
+      <!-- Applicants list -->
+      <div id="appList" class="grid grid-cols-2"><!-- cards injected here --></div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <p>© 2025 TalentConnect · Employers Portal</p>
+  </footer>
+
+  <script>
+    // ===== localStorage helpers =====
+    function getJobs(){
+      try { return JSON.parse(localStorage.getItem('tc_jobs')) || []; }
+      catch(e){ return []; }
+    }
+    function getApplicants(){
+      try { return JSON.parse(localStorage.getItem('tc_applicants')) || {}; }
+      catch(e){ return {}; }
+    }
+    function setApplicants(map){
+      localStorage.setItem('tc_applicants', JSON.stringify(map));
+    }
+
+    // ===== simple utils =====
+    function esc(s){ return String(s ?? '').replace(/[&<>"']/g, c=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;' }[c])); }
+    function fmtYears(n){ return (n ?? 0) + (n == 1 ? ' yr' : ' yrs'); }
+
+    // ===== seed demo applicants if none =====
+    function seedIfEmpty(jobId){
+      const map = getApplicants();
+      if(!map[jobId] || map[jobId].length === 0){
+        map[jobId] = [
+          {
+            id: crypto.randomUUID(),
+            name: "Ravi Sharma",
+            years: 2.5,
+            skills: ["React","TypeScript","Tailwind"],
+            location: "Vancouver",
+            availability: "Available in 2 weeks",
+            resumeUrl: "#",
+            status: "NEW", // NEW | SHORTLISTED | REJECTED
+            appliedAt: new Date().toISOString()
+          },
+          {
+            id: crypto.randomUUID(),
+            name: "Sara Khan",
+            years: 3,
+            skills: ["React","Next.js","Figma"],
+            location: "Remote",
+            availability: "Immediate",
+            resumeUrl: "#",
+            status: "NEW",
+            appliedAt: new Date().toISOString()
+          }
+        ];
+        setApplicants(map);
+      }
+    }
+
+    // ===== render dropdown and list =====
+    const jobs = getJobs();
+    const jobFilter = document.getElementById('jobFilter');
+    const statusFilter = document.getElementById('statusFilter');
+    const appList = document.getElementById('appList');
+    const summary = document.getElementById('summary');
+
+    function initJobFilter(){
+      // prefer last published job if present
+      const lastId = localStorage.getItem('tc_last_published_job_id');
+      const options = jobs.map(j => `<option value="${esc(j.id)}">${esc(j.title)} · ${esc(j.location || 'N/A')}</option>`).join('');
+      jobFilter.innerHTML = options || '<option value="">No jobs found</option>';
+      if(lastId && jobs.some(j => j.id === lastId)) jobFilter.value = lastId;
+    }
+
+    function render(){
+      const map = getApplicants();
+      const selectedJobId = jobFilter.value || (jobs[0] && jobs[0].id);
+      if(!selectedJobId){
+        appList.innerHTML = '<div class="muted">No jobs yet. Post a job first.</div>';
+        summary.textContent = '';
+        return;
+      }
+
+      // ensure there is at least demo data
+      if(!map[selectedJobId]) { seedIfEmpty(selectedJobId); }
+
+      const all = (getApplicants()[selectedJobId] || []);
+      const filter = statusFilter.value;
+      const items = (filter === 'ALL') ? all : all.filter(a => a.status === filter);
+
+      // header summary
+      const job = jobs.find(j => j.id === selectedJobId);
+      const counts = {
+        ALL: all.length,
+        NEW: all.filter(a=>a.status==='NEW').length,
+        SHORTLISTED: all.filter(a=>a.status==='SHORTLISTED').length,
+        REJECTED: all.filter(a=>a.status==='REJECTED').length
+      };
+      summary.textContent = `${job ? job.title : 'Job'} — ${counts.ALL} applicants (New ${counts.NEW} · Shortlisted ${counts.SHORTLISTED} · Rejected ${counts.REJECTED})`;
+
+      // list
+      if(items.length === 0){
+        appList.innerHTML = '<div class="card"><p class="card__note">No applicants for this filter.</p></div>';
+        return;
+      }
+
+      appList.innerHTML = items.map(a => `
+        <div class="card" data-app-id="${esc(a.id)}">
+          <p style="margin:.2rem 0; font-weight:600;">${esc(a.name)} — ${fmtYears(a.years)} · ${esc(a.skills.join(', '))}</p>
+          <p class="card__note">${esc(a.location)} · ${esc(a.availability)}</p>
+          <div class="inline-actions" style="margin-top:.35rem;">
+            <a class="btn" href="${a.resumeUrl ? esc(a.resumeUrl) : '#'}" target="_blank" rel="noopener">View Resume</a>
+            <button class="btn btn-shortlist" data-id="${esc(a.id)}">Shortlist</button>
+            <button class="btn btn-reject" data-id="${esc(a.id)}">Reject</button>
+            ${a.status === 'SHORTLISTED' ? '<span class="pill pill--ok">Shortlisted</span>' : a.status === 'REJECTED' ? '<span class="pill pill--bad">Rejected</span>' : ''}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // ===== event handlers =====
+    jobFilter.addEventListener('change', render);
+    statusFilter.addEventListener('change', render);
+
+    document.addEventListener('click', (e) => {
+      const isShort = e.target.classList.contains('btn-shortlist');
+      const isReject = e.target.classList.contains('btn-reject');
+      if(!isShort && !isReject) return;
+
+      const appId = e.target.getAttribute('data-id');
+      const jobId = jobFilter.value;
+      const map = getApplicants();
+      const list = map[jobId] || [];
+      const idx = list.findIndex(a => a.id === appId);
+      if(idx === -1) return;
+
+      list[idx].status = isShort ? 'SHORTLISTED' : 'REJECTED';
+      map[jobId] = list;
+      setApplicants(map);
+      render();
+    });
+
+    // ===== init =====
+    initJobFilter();
+    render();
+  </script>
+</body>
+</html>
