@@ -6,9 +6,36 @@
   <title>Manage Jobs · TalentConnect</title>
   <link rel="stylesheet" href="../css/style.css"/>
   <style>
-    .table-wrap{overflow:auto}
-    .status-open{background:#dcfce7;color:#166534;padding:.25rem .55rem;border-radius:999px;font-size:.8rem}
-    .status-closed{background:#fee2e2;color:#991b1b;padding:.25rem .55rem;border-radius:999px;font-size:.8rem}
+    .table-wrap {
+      overflow-x: auto;
+      max-height: 400px; /* scroll vertically if too long */
+      scrollbar-width: none;
+      width: 1000px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    tr{
+      margin-top: 2px;
+
+    }
+    .status-open {
+      background:#dcfce7;
+      color:#166534;
+      padding:.25rem .55rem;
+      border-radius:999px;
+      font-size:.8rem;
+    }
+    .status-closed {
+      background:#fee2e2;
+      color:#991b1b;
+      padding:.25rem .55rem;
+      border-radius:999px;
+      font-size:.8rem;
+    }
+    .card.wide {
+      width: 1000px; /* make card broader */
+      margin: 0 auto;
+    }
   </style>
 </head>
 <body>
@@ -30,7 +57,7 @@
   </header>
 
   <main class="container">
-    <div class="card">
+    <div class="card wide">
       <p class="card__title">Manage Job Listings</p>
       <p class="card__note">Edit, close, or delete your postings.</p>
 
@@ -50,8 +77,68 @@
               <th>Actions</th>
             </tr>
           </thead>
-          <tbody id="jobsBody">
-            <!-- rows injected by JS -->
+          <tbody>
+            <tr>
+              <td>Frontend Developer</td>
+              <td>Vancouver (Hybrid)</td>
+              <td>Full-time</td>
+              <td><span class="status-open">Open</span></td>
+              <td>12</td>
+              <td>
+                <button class="btn">Edit</button>
+                <button class="btn">Close</button>
+                <button class="btn">Delete</button>
+              </td>
+            </tr>
+            <tr>
+              <td>Data Analyst</td>
+              <td>Toronto (Remote)</td>
+              <td>Full-time</td>
+              <td><span class="status-open">Open</span></td>
+              <td>8</td>
+              <td>
+                <button class="btn">Edit</button>
+                <button class="btn">Close</button>
+                <button class="btn">Delete</button>
+              </td>
+            </tr>
+            <tr>
+              <td>QA Engineer</td>
+              <td>Calgary</td>
+              <td>Contract</td>
+              <td><span class="status-closed">Closed</span></td>
+              <td>5</td>
+              <td>
+                <button class="btn">Edit</button>
+                <button class="btn">Reopen</button>
+                <button class="btn">Delete</button>
+              </td>
+            </tr>
+            <tr>
+              <td>Product Designer</td>
+              <td>Remote</td>
+              <td>Internship</td>
+              <td><span class="status-open">Open</span></td>
+              <td>4</td>
+              <td>
+                <button class="btn">Edit</button>
+                <button class="btn">Close</button>
+                <button class="btn">Delete</button>
+              </td>
+            </tr>
+            <tr>
+              <td>Backend Engineer</td>
+              <td>Ottawa</td>
+              <td>Full-time</td>
+              <td><span class="status-open">Open</span></td>
+              <td>10</td>
+              <td>
+                <button class="btn">Edit</button>
+                <button class="btn">Close</button>
+                <button class="btn">Delete</button>
+              </td>
+            </tr>
+            <!-- add as many dummy rows as you like -->
           </tbody>
         </table>
       </div>
@@ -61,80 +148,5 @@
   <footer class="site-footer">
     <p>© 2025 TalentConnect · Employers Portal</p>
   </footer>
-
-  <script>
-    // LocalStorage helpers
-    function getJobs(){
-      try { return JSON.parse(localStorage.getItem('tc_jobs')) || []; }
-      catch(e){ return []; }
-    }
-    function setJobs(jobs){
-      localStorage.setItem('tc_jobs', JSON.stringify(jobs));
-    }
-
-    // Render table
-    function render(){
-      const tbody = document.getElementById('jobsBody');
-      const jobs = getJobs();
-      if(!jobs.length){
-        tbody.innerHTML = `<tr><td colspan="6" style="padding:1rem;color:#6b7280">No jobs yet. Post your first job.</td></tr>`;
-        return;
-      }
-      tbody.innerHTML = jobs.map(j => {
-        const statusClass = j.status === 'Open' ? 'status-open' : 'status-closed';
-        return `
-          <tr data-id="${j.id}">
-            <td>${escapeHTML(j.title)}</td>
-            <td>${escapeHTML(j.location || '')}</td>
-            <td>${escapeHTML(j.type || '')}</td>
-            <td><span class="${statusClass}">${j.status}</span></td>
-            <td>${j.applicantsCount || 0}</td>
-            <td>
-              <button class="btn btn-edit" data-id="${j.id}">Edit</button>
-              <button class="btn btn-toggle" data-id="${j.id}">${j.status === 'Open' ? 'Close' : 'Reopen'}</button>
-              <button class="btn btn-delete" data-id="${j.id}">Delete</button>
-            </td>
-          </tr>
-        `;
-      }).join('');
-    }
-
-    // Simple HTML escaper
-    function escapeHTML(s){
-      return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
-    }
-
-    // Actions: toggle status / delete / edit (basic)
-    document.addEventListener('click', (e) => {
-      const id = e.target.getAttribute('data-id');
-      if(!id) return;
-
-      const jobs = getJobs();
-      const idx = jobs.findIndex(j => j.id === id);
-      if(idx === -1) return;
-
-      if(e.target.classList.contains('btn-toggle')){
-        jobs[idx].status = jobs[idx].status === 'Open' ? 'Closed' : 'Open';
-        setJobs(jobs); render();
-      }
-      if(e.target.classList.contains('btn-delete')){
-        if(confirm('Delete this job?')){
-          jobs.splice(idx, 1);
-          setJobs(jobs); render();
-        }
-      }
-      if(e.target.classList.contains('btn-edit')){
-        // Simple edit flow: store the job id and go to post page to prefill
-        localStorage.setItem('tc_edit_job_id', id);
-        window.location.href = 'post_job.html?edit=1';
-      }
-    });
-
-    // Prefill support in post_job.html (optional):
-    // If you want to fully implement editing, add code in post_job.html to read tc_edit_job_id,
-    // load that job, fill the form, and overwrite on submit (instead of creating a new one).
-
-    render();
-  </script>
 </body>
 </html>

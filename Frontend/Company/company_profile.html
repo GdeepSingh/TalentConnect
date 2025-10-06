@@ -5,6 +5,49 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Company Profile · TalentConnect</title>
   <link rel="stylesheet" href="../css/style.css"/>
+  <style>
+    .profile-banner {
+      width: 100%;
+      height: 180px;
+      background: #e5e7eb;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1rem;
+      overflow: hidden;
+      position: relative;
+    }
+    .profile-banner img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .profile-logo {
+      width: 120px;
+      height: 120px;
+      border-radius: 8px;
+      background: #f3f4f6;
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: -60px 0 1rem 1rem; /* overlaps banner */
+      overflow: hidden;
+      position: relative;
+    }
+    .profile-logo img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .profile-card {
+  max-width: 1200px;   /* broader than default */
+  margin: 0 auto;      /* center it */
+}
+
+  </style>
 </head>
 <body>
   <header class="site-header">
@@ -23,66 +66,106 @@
       </nav>
     </div>
   </header>
+
   <main class="container">
 
-  <div class="card">
-    <p class="card__title">Company Profile</p>
-    <p class="card__note">Keep your company information up to date for candidates.</p>
+    <div class="card profile-card">
+      <p class="card__title">Company Profile</p>
+      <p class="card__note">Keep your company information up to date for candidates.</p>
 
-    <form action="done.html" method="get">
-      <div class="row">
-        <div>
-          <label for="cName">Company Name</label>
-          <input type="text" id="cName" name="cName" placeholder="Your Company Inc." />
-        </div>
-        <div>
-          <label for="cIndustry">Industry</label>
-          <input type="text" id="cIndustry" name="cIndustry" placeholder="Software, Retail, Healthcare…" />
-        </div>
+      <!-- Preview section -->
+      <div class="profile-banner" id="bannerPreview">
+        <span class="muted">Banner Preview</span>
+      </div>
+      <div class="profile-logo" id="logoPreview">
+        <span class="muted">Logo</span>
       </div>
 
-      <div class="row">
-        <div>
-          <label for="cWebsite">Website</label>
-          <input type="text" id="cWebsite" name="cWebsite" placeholder="https://yourcompany.com" />
+      <form action="done.html" method="post" enctype="multipart/form-data">
+        <label for="banner">Upload Banner</label>
+        <input type="file" id="banner" name="banner" accept="image/*" />
+
+        <label for="logo">Upload Logo</label>
+        <input type="file" id="logo" name="logo" accept="image/*" />
+
+        <div class="row">
+          <div>
+            <label for="cName">Company Name</label>
+            <input type="text" id="cName" name="cName" placeholder="Your Company Inc." />
+          </div>
+          <div>
+            <label for="cIndustry">Industry</label>
+            <input type="text" id="cIndustry" name="cIndustry" placeholder="Software, Retail, Healthcare…" />
+          </div>
         </div>
-        <div>
-          <label for="cLocation">HQ Location</label>
-          <input type="text" id="cLocation" name="cLocation" placeholder="City, Country" />
+
+        <div class="row">
+          <div>
+            <label for="cWebsite">Website</label>
+            <input type="text" id="cWebsite" name="cWebsite" placeholder="https://yourcompany.com" />
+          </div>
+          <div>
+            <label for="cLocation">HQ Location</label>
+            <input type="text" id="cLocation" name="cLocation" placeholder="City, Country" />
+          </div>
         </div>
-      </div>
 
-      <div class="row">
-        <div>
-          <label for="linkedIn">LinkedIn</label>
-          <input type="text" id="linkedIn" name="linkedIn" placeholder="https://linkedin.com/company/yourcompany" />
+        <div class="row">
+          <div>
+            <label for="linkedIn">LinkedIn</label>
+            <input type="text" id="linkedIn" name="linkedIn" placeholder="https://linkedin.com/company/yourcompany" />
+          </div>
+          <div>
+            <label for="careers">Careers Page</label>
+            <input type="text" id="careers" name="careers" placeholder="https://yourcompany.com/careers" />
+          </div>
         </div>
-        <div>
-          <label for="careers">Careers Page</label>
-          <input type="text" id="careers" name="careers" placeholder="https://yourcompany.com/careers" />
+
+        <label for="cAbout">About</label>
+        <textarea id="cAbout" name="cAbout" rows="5" placeholder="Describe your mission, values, and products."></textarea>
+
+        <label for="benefits">Benefits</label>
+        <textarea id="benefits" name="benefits" rows="4" placeholder="Health, dental, RRSP match, education stipend, etc."></textarea>
+
+        <div class="actions">
+          <a class="btn" href="company_dashboard.html">Cancel</a>
+          <button class="btn btn--primary" type="submit">Save Changes</button>
         </div>
-      </div>
-
-      <label for="logo">Logo (URL)</label>
-      <input type="text" id="logo" name="logo" placeholder="https://…/logo.png" />
-
-      <label for="cAbout">About</label>
-      <textarea id="cAbout" name="cAbout" rows="5" placeholder="Describe your mission, values, and products."></textarea>
-
-      <label for="benefits">Benefits</label>
-      <textarea id="benefits" name="benefits" rows="4" placeholder="Health, dental, RRSP match, education stipend, etc."></textarea>
-
-      <div class="actions">
-        <a class="btn" href="company_dashboard.html">Cancel</a>
-        <button class="btn btn--primary" type="submit">Save Changes</button>
-      </div>
-    </form>
-  </div>
+      </form>
+    </div>
 
   </main>
+
   <footer class="site-footer">
     <p>© 2025 TalentConnect · Employers Portal</p>
   </footer>
+
+  <script>
+    // Preview Banner
+    document.getElementById('banner').addEventListener('change', function(){
+      const file = this.files[0];
+      if(file){
+        const reader = new FileReader();
+        reader.onload = e => {
+          document.getElementById('bannerPreview').innerHTML =
+            `<img src="${e.target.result}" alt="Banner">`;
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    // Preview Logo
+    document.getElementById('logo').addEventListener('change', function(){
+      const file = this.files[0];
+      if(file){
+        const reader = new FileReader();
+        reader.onload = e => {
+          document.getElementById('logoPreview').innerHTML =
+            `<img src="${e.target.result}" alt="Logo">`;
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+  </script>
 </body>
 </html>
-
