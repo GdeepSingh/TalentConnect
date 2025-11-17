@@ -107,46 +107,77 @@
     <p>© 2025 TalentConnect · Employers Portal</p>
   </footer>
 
-  <script>
-    // Save job to localStorage then redirect to confirmation
-    const form = document.getElementById('jobForm');
+ <script>
+const form = document.getElementById("jobForm");
 
-    function getJobs(){
-      try { return JSON.parse(localStorage.getItem('tc_jobs')) || []; }
-      catch(e){ return []; }
-    }
-    function setJobs(jobs){
-      localStorage.setItem('tc_jobs', JSON.stringify(jobs));
-    }
+// READ jobs array
+function getJobs() {
+  return JSON.parse(localStorage.getItem("jobs")) || [];
+}
 
-    form.addEventListener('submit', (e) => {
-      e.preventDefault();
+// SAVE jobs array
+function setJobs(jobs) {
+  localStorage.setItem("jobs", JSON.stringify(jobs));
+}
 
-      const job = {
-        id: Date.now().toString(), // simple unique id
-        title: document.getElementById('title').value.trim(),
-        location: document.getElementById('jobLocation').value.trim(),
-        type: document.getElementById('type').value,
-        experience: document.getElementById('experience').value,
-        category: document.getElementById('category').value.trim(),
-        minSalary: document.getElementById('minSalary').value,
-        maxSalary: document.getElementById('maxSalary').value,
-        description: document.getElementById('description').value.trim(),
-        requirements: document.getElementById('requirements').value.trim(),
-        deadline: document.getElementById('deadline').value,
-        applyLink: document.getElementById('applyLink').value.trim(),
-        status: 'Open',
-        createdAt: new Date().toISOString()
-      };
+// CHECK IF EDIT MODE
+const editIndex = localStorage.getItem("editJobIndex");
+let jobs = getJobs();
 
-      const jobs = getJobs();
-      jobs.unshift(job); // newest first
-      setJobs(jobs);
-      localStorage.setItem('tc_last_published_job_id', job.id);
+if (editIndex !== null) {
+  const job = jobs[editIndex];
 
-      // redirect
-      window.location.href = 'job_published.html';
-    });
-  </script>
-</body>
-</html>
+  document.getElementById("title").value = job.title;
+  document.getElementById("jobLocation").value = job.location;
+  document.getElementById("type").value = job.type;
+  document.getElementById("experience").value = job.experience;
+  document.getElementById("category").value = job.category;
+  document.getElementById("minSalary").value = job.minSalary;
+  document.getElementById("maxSalary").value = job.maxSalary;
+  document.getElementById("description").value = job.description;
+  document.getElementById("requirements").value = job.requirements;
+  document.getElementById("deadline").value = job.deadline;
+  document.getElementById("applyLink").value = job.applyLink;
+
+  document.querySelector('button[type="submit"]').textContent = "Update Job";
+
+  form.onsubmit = function (e) {
+    e.preventDefault();
+    jobs[editIndex] = collectJobData();
+    setJobs(jobs);
+    localStorage.removeItem("editJobIndex");
+    alert("Job Updated!");
+    window.location.href = "manage_jobs.html";
+  };
+}
+
+// DEFAULT CREATE MODE
+form.addEventListener("submit", (e) => {
+  e.preventDefault();
+  const job = collectJobData();
+  jobs.unshift(job);
+  setJobs(jobs);
+  alert("Job Published!");
+  window.location.href = "manage_jobs.html";
+});
+
+// COLLECT ALL FORM DATA
+function collectJobData() {
+  return {
+    title: title.value.trim(),
+    location: jobLocation.value.trim(),
+    type: type.value,
+    experience: experience.value,
+    category: category.value.trim(),
+    minSalary: minSalary.value,
+    maxSalary: maxSalary.value,
+    description: description.value.trim(),
+    requirements: requirements.value.trim(),
+    deadline: deadline.value,
+    applyLink: applyLink.value.trim(),
+    status: "Open",
+    applicants: 0,
+    createdAt: new Date().toISOString()
+  };
+}
+</script>

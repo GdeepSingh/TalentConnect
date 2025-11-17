@@ -8,15 +8,10 @@
   <style>
     .table-wrap {
       overflow-x: auto;
-      max-height: 400px; /* scroll vertically if too long */
-      scrollbar-width: none;
+      max-height: 400px;
       width: 1000px;
       margin-left: auto;
       margin-right: auto;
-    }
-    tr{
-      margin-top: 2px;
-
     }
     .status-open {
       background:#dcfce7;
@@ -33,120 +28,123 @@
       font-size:.8rem;
     }
     .card.wide {
-      width: 1000px; /* make card broader */
+      width: 1000px;
       margin: 0 auto;
     }
   </style>
 </head>
+
 <body>
-  <header class="site-header">
-    <div class="site-header__inner">
-      <a href="company_dashboard.html" class="brand">
-        <span class="brand__logo" aria-hidden="true"></span>
-        <span class="brand__name">TalentConnect</span>
-      </a>
-      <nav style="display:flex;gap:12px;">
-        <a class="btn btn--ghost" href="company_dashboard.html">Dashboard</a>
-        <a class="btn btn--ghost" href="post_job.html">Post a Job</a>
-        <a class="btn btn--ghost" href="manage_jobs.html">Manage Jobs</a>
-        <a class="btn btn--ghost" href="applicants.html">Applicants</a>
-        <a class="btn btn--ghost" href="company_profile.html">Company Profile</a>
-        <a class="btn" href="company_login.html">Sign out</a>
-      </nav>
+<header class="site-header">
+  <div class="site-header__inner">
+    <a href="company_dashboard.html" class="brand">
+      <span class="brand__logo"></span>
+      <span class="brand__name">TalentConnect</span>
+    </a>
+    <nav style="display:flex;gap:12px;">
+      <a class="btn btn--ghost" href="company_dashboard.html">Dashboard</a>
+      <a class="btn btn--ghost" href="post_job.html">Post a Job</a>
+      <a class="btn btn--ghost" href="manage_jobs.html">Manage Jobs</a>
+      <a class="btn btn--ghost" href="applicants.html">Applicants</a>
+      <a class="btn btn--ghost" href="company_profile.html">Company Profile</a>
+      <a class="btn" href="company_login.html">Sign out</a>
+    </nav>
+  </div>
+</header>
+
+<main class="container">
+  <div class="card wide">
+    <p class="card__title">Manage Job Listings</p>
+    <p class="card__note">Edit, close, or delete your postings.</p>
+
+    <div class="actions" style="margin-bottom:10px;">
+      <a class="btn btn--primary" href="post_job.html">Post a New Job</a>
     </div>
-  </header>
 
-  <main class="container">
-    <div class="card wide">
-      <p class="card__title">Manage Job Listings</p>
-      <p class="card__note">Edit, close, or delete your postings.</p>
-
-      <div class="actions" style="margin-bottom:10px;">
-        <a class="btn btn--primary" href="post_job.html">Post a New Job</a>
-      </div>
-
-      <div class="table-wrap">
-        <table class="table">
-          <thead>
-            <tr>
-              <th>Title</th>
-              <th>Location</th>
-              <th>Type</th>
-              <th>Status</th>
-              <th>Applicants</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>Frontend Developer</td>
-              <td>Vancouver (Hybrid)</td>
-              <td>Full-time</td>
-              <td><span class="status-open">Open</span></td>
-              <td>12</td>
-              <td>
-                <button class="btn">Edit</button>
-                <button class="btn">Close</button>
-                <button class="btn">Delete</button>
-              </td>
-            </tr>
-            <tr>
-              <td>Data Analyst</td>
-              <td>Toronto (Remote)</td>
-              <td>Full-time</td>
-              <td><span class="status-open">Open</span></td>
-              <td>8</td>
-              <td>
-                <button class="btn">Edit</button>
-                <button class="btn">Close</button>
-                <button class="btn">Delete</button>
-              </td>
-            </tr>
-            <tr>
-              <td>QA Engineer</td>
-              <td>Calgary</td>
-              <td>Contract</td>
-              <td><span class="status-closed">Closed</span></td>
-              <td>5</td>
-              <td>
-                <button class="btn">Edit</button>
-                <button class="btn">Reopen</button>
-                <button class="btn">Delete</button>
-              </td>
-            </tr>
-            <tr>
-              <td>Product Designer</td>
-              <td>Remote</td>
-              <td>Internship</td>
-              <td><span class="status-open">Open</span></td>
-              <td>4</td>
-              <td>
-                <button class="btn">Edit</button>
-                <button class="btn">Close</button>
-                <button class="btn">Delete</button>
-              </td>
-            </tr>
-            <tr>
-              <td>Backend Engineer</td>
-              <td>Ottawa</td>
-              <td>Full-time</td>
-              <td><span class="status-open">Open</span></td>
-              <td>10</td>
-              <td>
-                <button class="btn">Edit</button>
-                <button class="btn">Close</button>
-                <button class="btn">Delete</button>
-              </td>
-            </tr>
-            <!-- add as many dummy rows as you like -->
-          </tbody>
-        </table>
-      </div>
+    <div class="table-wrap">
+      <table class="table">
+        <thead>
+        <tr>
+          <th>Title</th>
+          <th>Location</th>
+          <th>Type</th>
+          <th>Status</th>
+          <th>Applicants</th>
+          <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody id="jobsTableBody"></tbody>
+      </table>
     </div>
-  </main>
+  </div>
+</main>
 
-  <footer class="site-footer">
-    <p>© 2025 TalentConnect · Employers Portal</p>
-  </footer>
+<footer class="site-footer">
+  <p>© 2025 TalentConnect · Employers Portal</p>
+</footer>
+
+<script>
+/* ✔ READ jobs from correct localStorage key */
+function loadJobs() {
+  const jobs = JSON.parse(localStorage.getItem("tc_jobs")) || [];
+  const tbody = document.getElementById("jobsTableBody");
+  tbody.innerHTML = "";
+
+  if (jobs.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;">No jobs posted yet.</td></tr>`;
+    return;
+  }
+
+  jobs.forEach((job, index) => {
+    tbody.innerHTML += `
+      <tr>
+        <td>${job.title}</td>
+        <td>${job.location}</td>
+        <td>${job.type}</td>
+        <td>
+          <span class="${job.status === "Open" ? "status-open" : "status-closed"}">
+            ${job.status}
+          </span>
+        </td>
+        <td>${job.applicants ?? 0}</td>
+        <td>
+          <button class="btn" onclick="editJob(${index})">Edit</button>
+          <button class="btn" onclick="toggleStatus(${index})">
+            ${job.status === "Open" ? "Close" : "Reopen"}
+          </button>
+          <button class="btn" onclick="deleteJob(${index})">Delete</button>
+        </td>
+      </tr>
+    `;
+  });
+}
+
+/* ✔ Close / Reopen */
+function toggleStatus(i) {
+  let jobs = JSON.parse(localStorage.getItem("tc_jobs")) || [];
+  jobs[i].status = jobs[i].status === "Open" ? "Closed" : "Open";
+  localStorage.setItem("tc_jobs", JSON.stringify(jobs));
+  loadJobs();
+}
+
+/* ✔ Delete */
+function deleteJob(i) {
+  if (!confirm("Delete this job?")) return;
+  let jobs = JSON.parse(localStorage.getItem("tc_jobs")) || [];
+  jobs.splice(i, 1);
+  localStorage.setItem("tc_jobs", JSON.stringify(jobs));
+  loadJobs();
+}
+
+/* ✔ Edit job */
+function editJob(i) {
+  localStorage.setItem("editJobIndex", i);
+  window.location.href = "post_job.html";
+}
+
+/* Load on start */
+loadJobs();
+</script>
+
 </body>
 </html>

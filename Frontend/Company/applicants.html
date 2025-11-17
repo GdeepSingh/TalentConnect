@@ -5,230 +5,150 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Applicants · TalentConnect</title>
   <link rel="stylesheet" href="../css/style.css"/>
+
   <style>
-/* Make the page card broader */
-.card.wide{
-  width:900px;
-  /* remove flex – it’s not needed here */
-
-}
-
-/* Make the applicants area a real grid + scroll */
+.card.wide{width:900px;}
 .cards-wrap{
-  overflow-y: scroll;
+  overflow-y:auto;
   display:flex;
-  flex-direction: column;
-  flex-wrap: nowrap;
-  align-items: center;
-
-  scrollbar-width: none;
+  flex-direction:column;
+  gap:14px;
+  max-height:520px;
+  scrollbar-width:none;
 }
-
 .muted{color:#6b7280}
 .pill{display:inline-block;padding:.2rem .6rem;border-radius:999px;font-size:.8rem}
 .pill--ok{background:#dcfce7;color:#166534}
 .pill--bad{background:#fee2e2;color:#991b1b}
-.job-btn{cursor:default}
 .divider{height:1px;background:var(--border);opacity:.8;margin:.5rem 0 1rem}
-.summary{display:flex;flex-wrap:wrap;gap:.75rem;font-size:.92rem}
-.summary span{background:#f3f4f6;border:1px solid var(--border);border-radius:999px;padding:.25rem .6rem}
-
+.summary{display:flex;gap:.6rem;flex-wrap:wrap}
+.summary span{background:#f3f4f6;border:1px solid var(--border);border-radius:999px;padding:.25rem .6rem;font-size:.9rem}
   </style>
 </head>
+
 <body>
-  <header class="site-header">
-    <div class="site-header__inner">
-      <a href="company_dashboard.html" class="brand">
-        <span class="brand__logo" aria-hidden="true"></span>
-        <span class="brand__name">TalentConnect</span>
-      </a>
-      <nav style="display:flex;gap:12px;">
-        <a class="btn btn--ghost" href="company_dashboard.html">Dashboard</a>
-        <a class="btn btn--ghost" href="post_job.html">Post a Job</a>
-        <a class="btn btn--ghost" href="manage_jobs.html">Manage Jobs</a>
-        <a class="btn btn--ghost" href="applicants.html">Applicants</a>
-        <a class="btn btn--ghost" href="company_profile.html">Company Profile</a>
-        <a class="btn" href="company_login.html">Sign out</a>
-      </nav>
-    </div>
-  </header>
 
-  <main class="container">
-    <div class="card wide">
-      <p class="card__title">Applicants</p>
-      <p class="card__note">Review candidates by role. Use the dropdown to choose an action.</p>
+<header class="site-header">
+  <div class="site-header__inner">
+    <a href="company_dashboard.html" class="brand">
+      <span class="brand__logo"></span>
+      <span class="brand__name">TalentConnect</span>
+    </a>
+    <nav style="display:flex;gap:12px;">
+      <a class="btn btn--ghost" href="company_dashboard.html">Dashboard</a>
+      <a class="btn btn--ghost" href="post_job.html">Post a Job</a>
+      <a class="btn btn--ghost" href="manage_jobs.html">Manage Jobs</a>
+      <a class="btn btn--ghost" href="applicants.html">Applicants</a>
+      <a class="btn btn--ghost" href="company_profile.html">Company Profile</a>
+      <a class="btn" href="company_login.html">Sign out</a>
+    </nav>
+  </div>
+</header>
 
-      <!-- faux filters (static) -->
-      <div class="row">
-        <div>
-          <label for="jobFilter">Select Job</label>
-          <select id="jobFilter" disabled>
-            <option selected>Frontend Developer</option>
-            <option>Data Analyst</option>
-            <option>QA Engineer</option>
+<main class="container">
+
+  <div class="card wide">
+    <p class="card__title">Applicants</p>
+    <p class="card__note">Review candidates by role. Status updates auto-save.</p>
+
+    <div class="summary" id="summaryBox"></div>
+    <div class="divider"></div>
+
+    <div class="cards-wrap" id="cards"></div>
+  </div>
+
+</main>
+
+<footer class="site-footer">
+  <p>© 2025 TalentConnect · Employers Portal</p>
+</footer>
+
+
+<script>
+/* ============ STORAGE HELPERS ============ */
+const getJobs       = () => JSON.parse(localStorage.getItem("tc_jobs")) || [];
+const getApplicants = () => JSON.parse(localStorage.getItem("tc_applicants")) || {};
+const saveApplicants = d => localStorage.setItem("tc_applicants", JSON.stringify(d));
+
+/* ========== RENDERING MAIN FUNCTION ========== */
+function renderApplicants(){
+  const jobs = getJobs();
+  const apps = getApplicants();
+  const wrap = document.getElementById("cards");
+  const summary = document.getElementById("summaryBox");
+
+  wrap.innerHTML = "";
+
+  let TOTAL=0, NEW=0, SHORT=0, REJ=0;
+
+  for(const job of jobs){
+    const arr = apps[job.id] || [];
+    arr.forEach(app => {
+
+      TOTAL++;
+      if(app.status==="NEW") NEW++;
+      if(app.status==="SHORTLISTED") SHORT++;
+      if(app.status==="REJECTED") REJ++;
+
+      wrap.innerHTML += `
+      <div class="card" style="margin:0;">
+        <div style="display:flex;justify-content:space-between;">
+          <p style="font-weight:600;margin:.2rem 0;">${app.name}</p>
+          <span class="pill ${badge(app.status)}">${pretty(app.status)}</span>
+        </div>
+
+        <p class="card__note">${app.exp ?? ""}</p>
+
+        <button class="btn" style="margin:.3rem 0;">Applied: ${job.title}</button>
+
+        <label class="muted" style="font-size:.85rem;">Action</label>
+        <div class="actions">
+          <select onchange="updateStatus('${job.id}','${app.id}',this.value)">
+            <option>— Select Action —</option>
+            <option value="VIEW">View Resume</option>
+            <option value="SHORTLIST">Shortlist</option>
+            <option value="REJECT">Reject</option>
           </select>
-        </div>
-        <div>
-          <label for="statusFilter">Applicant Status</label>
-          <select id="statusFilter" disabled>
-            <option selected>All</option>
-            <option>New</option>
-            <option>Shortlisted</option>
-            <option>Rejected</option>
-          </select>
+          <a class="btn" href="${app.resume ?? "#"}" target="_blank">Open</a>
         </div>
       </div>
+      `;
+    });
+  }
 
-      <div class="summary" style="margin:.25rem 0 1rem;">
-        <span>Total: 6</span><span>New: 3</span><span>Shortlisted: 2</span><span>Rejected: 1</span>
-      </div>
-      <div class="divider"></div>
+  summary.innerHTML = `
+    <span>Total: ${TOTAL}</span>
+    <span>New: ${NEW}</span>
+    <span>Shortlisted: ${SHORT}</span>
+    <span>Rejected: ${REJ}</span>
+  `;
 
-      <!-- Scrollable applicants area -->
-      <div class="cards-wrap">
+  if(TOTAL===0){
+    wrap.innerHTML = `<p style="padding:20px;">No applicants yet.</p>`;
+  }
+}
 
-        <!-- Applicant card -->
-        <div class="card" style="margin:0;">
-          <div style="display:flex;justify-content:space-between;align-items:center;">
-            <p style="margin:.2rem 0;font-weight:600;">Ravi Sharma</p>
-            <span class="pill pill--ok">New</span>
-          </div>
-          <p class="card__note">2.5 yrs · React, TypeScript, Tailwind · Vancouver · Available in 2 weeks</p>
+/* ========== UPDATE STATUS ========== */
+function updateStatus(jobId, appId, action){
+  if(action==="VIEW") return;
 
-          <!-- Which job they applied for -->
-          <div class="actions" style="margin:.3rem 0 .8rem;">
-            <button class="btn job-btn">Applied: Frontend Developer</button>
-          </div>
+  const apps = getApplicants();
+  const list = apps[jobId];
+  const app = list.find(a => a.id===appId);
 
-          <!-- Default dropdown of actions (no JS) -->
-          <label for="action-ravi" class="muted" style="font-size:.85rem;">Action</label>
-          <div class="actions" style="align-items:center;">
-            <select id="action-ravi">
-              <option selected>— Select Action —</option>
-              <option>View Resume</option>
-              <option>Shortlist</option>
-              <option>Reject</option>
-            </select>
-            <a class="btn" href="#" target="_blank" rel="noopener">Open</a>
-          </div>
-        </div>
+  app.status = (action==="SHORTLIST") ? "SHORTLISTED" : "REJECTED";
 
-        <!-- Applicant card -->
-        <div class="card" style="margin:0;">
-          <div style="display:flex;justify-content:space-between;align-items:center;">
-            <p style="margin:.2rem 0;font-weight:600;">Sara Khan</p>
-            <span class="pill pill--ok">New</span>
-          </div>
-          <p class="card__note">3 yrs · React, Next.js, Figma · Remote · Immediate</p>
-          <div class="actions" style="margin:.3rem 0 .8rem;">
-            <button class="btn job-btn">Applied: Frontend Developer</button>
-          </div>
-          <label for="action-sara" class="muted" style="font-size:.85rem;">Action</label>
-          <div class="actions" style="align-items:center;">
-            <select id="action-sara">
-              <option selected>— Select Action —</option>
-              <option>View Resume</option>
-              <option>Shortlist</option>
-              <option>Reject</option>
-            </select>
-            <a class="btn" href="#" target="_blank" rel="noopener">Open</a>
-          </div>
-        </div>
+  saveApplicants(apps);
+  renderApplicants();
+}
 
-        <!-- Applicant card -->
-        <div class="card" style="margin:0;">
-          <div style="display:flex;justify-content:space-between;align-items:center;">
-            <p style="margin:.2rem 0;font-weight:600;">Alex Chen</p>
-            <span class="pill pill--ok">Shortlisted</span>
-          </div>
-          <p class="card__note">1.5 yrs · SQL, Python, Tableau · Toronto · 1 month notice</p>
-          <div class="actions" style="margin:.3rem 0 .8rem;">
-            <button class="btn job-btn">Applied: Data Analyst</button>
-          </div>
-          <label for="action-alex" class="muted" style="font-size:.85rem;">Action</label>
-          <div class="actions" style="align-items:center;">
-            <select id="action-alex">
-              <option selected>— Select Action —</option>
-              <option>View Resume</option>
-              <option>Shortlist</option>
-              <option>Reject</option>
-            </select>
-            <a class="btn" href="#" target="_blank" rel="noopener">Open</a>
-          </div>
-        </div>
+/* ========== HELPERS ========== */
+const pretty = s => s.charAt(0) + s.slice(1).toLowerCase();
+const badge  = s => s==="REJECTED" ? "pill--bad" : "pill--ok";
 
-        <!-- Applicant card -->
-        <div class="card" style="margin:0;">
-          <div style="display:flex;justify-content:space-between;align-items:center;">
-            <p style="margin:.2rem 0;font-weight:600;">Amrit Gill</p>
-            <span class="pill pill--bad">Rejected</span>
-          </div>
-          <p class="card__note">4 yrs · Java, Spring, AWS · Calgary · 2 weeks notice</p>
-          <div class="actions" style="margin:.3rem 0 .8rem;">
-            <button class="btn job-btn">Applied: Backend Engineer</button>
-          </div>
-          <label for="action-amrit" class="muted" style="font-size:.85rem;">Action</label>
-          <div class="actions" style="align-items:center;">
-            <select id="action-amrit">
-              <option selected>— Select Action —</option>
-              <option>View Resume</option>
-              <option>Shortlist</option>
-              <option>Reject</option>
-            </select>
-            <a class="btn" href="#" target="_blank" rel="noopener">Open</a>
-          </div>
-        </div>
+/* BOOT */
+renderApplicants();
+</script>
 
-        <!-- Applicant card -->
-        <div class="card" style="margin:0;">
-          <div style="display:flex;justify-content:space-between;align-items:center;">
-            <p style="margin:.2rem 0;font-weight:600;">Diego Lopez</p>
-            <span class="pill pill--ok">Shortlisted</span>
-          </div>
-          <p class="card__note">5 yrs · Node, PostgreSQL, Docker · Ottawa · Immediate</p>
-          <div class="actions" style="margin:.3rem 0 .8rem;">
-            <button class="btn job-btn">Applied: Backend Engineer</button>
-          </div>
-          <label for="action-diego" class="muted" style="font-size:.85rem;">Action</label>
-          <div class="actions" style="align-items:center;">
-            <select id="action-diego">
-              <option selected>— Select Action —</option>
-              <option>View Resume</option>
-              <option>Shortlist</option>
-              <option>Reject</option>
-            </select>
-            <a class="btn" href="#" target="_blank" rel="noopener">Open</a>
-          </div>
-        </div>
-
-        <!-- Applicant card -->
-        <div class="card" style="margin:0;">
-          <div style="display:flex;justify-content:space-between;align-items:center;">
-            <p style="margin:.2rem 0;font-weight:600;">Priya Patel</p>
-            <span class="pill pill--ok">New</span>
-          </div>
-          <p class="card__note">2 yrs · Python, Pandas, Looker · Remote · Immediate</p>
-          <div class="actions" style="margin:.3rem 0 .8rem;">
-            <button class="btn job-btn">Applied: Data Analyst</button>
-          </div>
-          <label for="action-priya" class="muted" style="font-size:.85rem;">Action</label>
-          <div class="actions" style="align-items:center;">
-            <select id="action-priya">
-              <option selected>— Select Action —</option>
-              <option>View Resume</option>
-              <option>Shortlist</option>
-              <option>Reject</option>
-            </select>
-            <a class="btn" href="#" target="_blank" rel="noopener">Open</a>
-          </div>
-        </div>
-
-      </div>
-    </div>
-  </main>
-
-  <footer class="site-footer">
-    <p>© 2025 TalentConnect · Employers Portal</p>
-  </footer>
 </body>
 </html>
