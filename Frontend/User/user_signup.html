@@ -1,8 +1,3 @@
-<!-- =========================================================================
-     TalentConnect – Step 1: Sign Up (Desktop)
-     Purpose: Collect name, email, password, re-type password
-     This is UI-only; hook up action/JS later as needed.
-     ========================================================================= -->
 <!doctype html>
 <html lang="en">
 <head>
@@ -11,61 +6,139 @@
   <link rel="stylesheet" href="../css/style.css" />
 </head>
 <body>
-  <!-- Top brand/header -->
-  <header class="site-header" role="banner" aria-label="Site header">
-    <div class="site-header__inner">
-      <div class="brand">
-        <div class="brand__logo" aria-hidden="true"></div>
-        <div class="brand__name">TalentConnect</div>
+  <div class="bg-dot"></div>
+<div class="bg-shape a"></div>
+<div class="bg-shape b"></div>
+
+<header class="site-header">
+  <div class="site-header__inner">
+    <div class="brand">
+      <div class="brand__logo"></div>
+      <div class="brand__name">TalentConnect</div>
+    </div>
+    <div class="muted">
+      Already have an account?
+      <a href="login.html">Log in</a>
+    </div>
+  </div>
+</header>
+
+<main class="container">
+  <section class="card">
+    <h1 class="card__title">Create your account</h1>
+    <p class="card__note">Choose Job Seeker or Employer to continue.</p>
+
+    <form id="signupForm" novalidate>
+
+      <label>Full Name</label>
+      <input id="name" type="text" placeholder="e.g., John Singh">
+
+      <label>Email</label>
+      <input id="email" type="email" placeholder="you@email.com">
+
+      <label>Password</label>
+      <input id="password" type="password">
+
+      <label>Re-enter Password</label>
+      <input id="confirm" type="password">
+
+      <label>Account Type</label>
+      <select id="role">
+        <option value="">Select one</option>
+        <option value="seeker">Job Seeker</option>
+        <option value="employer">Employer</option>
+      </select>
+
+      <div id="companyBox" style="display:none;">
+        <label>Company Secret Code</label>
+        <input id="companyCode" type="text" placeholder="Provided by company admin">
       </div>
-      <div class="muted">Already have an account? <a href="login.html">Log in</a></div>
-    </div>
-  </header>
 
-  <!-- Main content container -->
-  <main class="container" role="main">
-    <!-- Stepper shows overall progress (Step 1 active) -->
-    <div class="stepper" aria-label="Signup steps">
-      <div class="stepper__dot stepper__dot--active" title="Step 1"></div>
-      <div class="stepper__dot" title="Step 2"></div>
-      <div class="stepper__dot" title="Step 3"></div>
-      <div class="stepper__dot" title="Step 4"></div>
-    </div>
+      <p id="msg" class="card__note" style="margin-top:8px;"></p>
 
-    <!-- Card with the actual form -->
-    <section class="card" aria-labelledby="signupTitle">
-      <h1 id="signupTitle" class="card__title">Create your account</h1>
-      <p class="card__note">Use an email you check often. Password must be 8+ characters.</p>
+      <div class="actions">
+        <button class="btn btn--primary" type="submit">Create Account →</button>
+      </div>
 
-      <!-- Form (no action yet; wire up later to PHP or API) -->
-      <form novalidate>
-        <!-- Name -->
-        <label for="name">Full Name</label>
-        <input id="name" name="name" type="text" placeholder="e.g., Guranshdeep Singh" />
+    </form>
+  </section>
+</main>
 
-        <!-- Email -->
-        <label for="email">Email Address</label>
-        <input id="email" name="email" type="email" placeholder="you@example.com" />
+<footer class="site-footer">© 2025 TalentConnect</footer>
 
-        <!-- Passwords -->
-        <label for="password">Password</label>
-        <input id="password" name="password" type="password" placeholder="8+ characters, number & symbol" />
+<script>
+/* SHOW COMPANY CODE FIELD IF EMPLOYER */
+document.getElementById("role").addEventListener("change", e => {
+  document.getElementById("companyBox").style.display =
+    e.target.value === "employer" ? "block" : "none";
+});
 
-        <label for="confirm">Re-type Password</label>
-        <input id="confirm" name="confirm" type="password" placeholder="Repeat password" />
+/* GET + SAVE USER HELPERS */
+function getUsers(){
+  try { return JSON.parse(localStorage.getItem("tc_users")) || []; }
+  catch(e){ return []; }
+}
+function saveUsers(arr){
+  localStorage.setItem("tc_users", JSON.stringify(arr));
+}
 
-        <!-- Actions -->
-        <div class="actions">
-          <!-- Secondary/ghost cancels (no link) -->
-          <button class="btn btn--ghost" type="button">Cancel</button>
-          <!-- Primary continues to Step 2 (link to experience.html for demo) -->
-          <a class="btn btn--primary" href="experience.html">Create Account →</a>
-        </div>
-      </form>
-    </section>
-  </main>
+/* SIGNUP HANDLER */
+document.getElementById("signupForm").addEventListener("submit", e => {
+  e.preventDefault();
 
-  <!-- Footer -->
-  <footer class="site-footer">© 2025 TalentConnect</footer>
+  const name  = document.getElementById("name").value.trim();
+  const email = document.getElementById("email").value.trim();
+  const pass  = document.getElementById("password").value;
+  const conf  = document.getElementById("confirm").value;
+  const role  = document.getElementById("role").value;
+  const code  = document.getElementById("companyCode").value;
+  const msgEl = document.getElementById("msg");
+
+  if(!name || !email || !pass){
+    msgEl.textContent = "⚠ Please fill all required fields.";
+    msgEl.style.color = "red";
+    return;
+  }
+  if(pass !== conf){
+    msgEl.textContent = "⚠ Passwords do not match.";
+    msgEl.style.color = "red";
+    return;
+  }
+
+  const users = getUsers();
+  if(users.some(u => u.email === email)){
+    msgEl.textContent = "⚠ Account already exists.";
+    msgEl.style.color = "red";
+    return;
+  }
+
+  /* CREATE USER OBJECT */
+  const user = {
+    name,
+    email,
+    password: pass,
+    role,                   // seeker or employer
+    companyCode: code || null
+  };
+
+  users.push(user);
+  saveUsers(users);
+
+  /* 🚨 IMPORTANT: CLEAR PREVIOUS USER DATA */
+  localStorage.removeItem("tc_experience");
+  localStorage.removeItem("tc_education");
+
+  /* SAVE ACTIVE USER */
+  localStorage.setItem("tc_active_user", JSON.stringify(user));
+
+  /* REDIRECT */
+  if(role === "employer"){
+    window.location.href = "company_dashboard.html";
+  } else {
+    window.location.href = "experience.html";
+  }
+});
+</script>
+
 </body>
 </html>

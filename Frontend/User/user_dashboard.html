@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>User Dashboard · TalentConnect</title>
+<link rel="stylesheet" href="../css/style.css"/>
+
+<style>
+.job-card{
+  border:1px solid var(--border);
+  background:white;
+  padding:1rem;
+  border-radius:10px;
+  margin-bottom:1rem;
+}
+.job-card h2{margin:0 0 .3rem;}
+.muted{color:#6b7280}
+</style>
+</head>
+
+<body>
+
+<header class="site-header">
+  <div class="site-header__inner">
+    <div class="brand">
+      <div class="brand__logo"></div>
+      <span class="brand__name">TalentConnect</span>
+    </div>
+
+    <nav style="display:flex;gap:12px;">
+      <a class="btn btn--ghost" href="user_dashboard.html">Dashboard</a>
+      <a class="btn btn--ghost" href="user_profile.html">Profile</a>
+      <a class="btn" href="login.html" onclick="localStorage.removeItem('tc_active_user')">Sign out</a>
+    </nav>
+  </div>
+</header>
+
+<main class="container">
+  <h1 style="margin-bottom:1rem;">🔥 Available Jobs</h1>
+  <div id="jobList"></div>
+</main>
+
+<footer class="site-footer">© 2025 TalentConnect</footer>
+
+<script>
+const jobs = JSON.parse(localStorage.getItem("tc_jobs") || "[]");
+const appliedMap = JSON.parse(localStorage.getItem("tc_applicants") || "{}");
+const user   = JSON.parse(localStorage.getItem("tc_active_user") || "{}");
+const jobList = document.getElementById("jobList");
+
+if(jobs.length === 0){
+  jobList.innerHTML = `<p class="muted">No jobs posted yet.</p>`;
+} else {
+  jobList.innerHTML = jobs.map(j => {
+    const applied = (appliedMap[j.id] || [])
+      .some(a => a.userEmail === user.email);
+
+    return `
+      <div class="job-card">
+        <h2>${j.title}</h2>
+        <p class="muted">${j.location} · ${j.type}</p>
+
+        <button class="btn"
+          onclick="applyJob('${j.id}')"
+          ${applied ? "disabled" : ""}>
+          ${applied ? "✔ Applied" : "Apply"}
+        </button>
+      </div>
+    `;
+  }).join("");
+}
+
+function applyJob(jobId){
+  const apps = JSON.parse(localStorage.getItem("tc_applicants") || "{}");
+
+  if(!apps[jobId]) apps[jobId] = [];
+  apps[jobId].push({
+    userEmail: user.email,
+    name: user.name,
+    appliedAt: new Date().toISOString()
+  });
+
+  localStorage.setItem("tc_applicants", JSON.stringify(apps));
+  location.reload();
+}
+</script>
+
+</body>
+</html>

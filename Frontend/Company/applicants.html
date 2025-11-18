@@ -65,89 +65,45 @@
 
 
 <script>
-/* ============ STORAGE HELPERS ============ */
-const getJobs       = () => JSON.parse(localStorage.getItem("tc_jobs")) || [];
-const getApplicants = () => JSON.parse(localStorage.getItem("tc_applicants")) || {};
-const saveApplicants = d => localStorage.setItem("tc_applicants", JSON.stringify(d));
+function getJobs(){ return JSON.parse(localStorage.getItem("tc_jobs") || "[]"); }
+function getApplicants(){ return JSON.parse(localStorage.getItem("tc_applicants") || "{}"); }
 
-/* ========== RENDERING MAIN FUNCTION ========== */
-function renderApplicants(){
-  const jobs = getJobs();
-  const apps = getApplicants();
-  const wrap = document.getElementById("cards");
-  const summary = document.getElementById("summaryBox");
+const apps = getApplicants();
+const users = JSON.parse(localStorage.getItem("tc_users") || "[]");
 
-  wrap.innerHTML = "";
+function getUserProfile(email){
+  return {
+    base: users.find(u=>u.email===email) ?? {},
+    exp: JSON.parse(localStorage.getItem("tc_experience") || "[]"),
+    edu: JSON.parse(localStorage.getItem("tc_education") || "[]"),
+    skill: JSON.parse(localStorage.getItem("tc_skills") || "{}"),
+  };
+}
 
-  let TOTAL=0, NEW=0, SHORT=0, REJ=0;
+let html = "";
 
-  for(const job of jobs){
-    const arr = apps[job.id] || [];
-    arr.forEach(app => {
+Object.entries(apps).forEach(([jobId, arr])=>{
+  const job = getJobs().find(j=>j.id===jobId);
+  html += `<h2>${job?.title ?? "Unknown Job"}</h2>`;
 
-      TOTAL++;
-      if(app.status==="NEW") NEW++;
-      if(app.status==="SHORTLISTED") SHORT++;
-      if(app.status==="REJECTED") REJ++;
+  arr.forEach(a=>{
+    const profile = getUserProfile(a.userEmail);
 
-      wrap.innerHTML += `
-      <div class="card" style="margin:0;">
-        <div style="display:flex;justify-content:space-between;">
-          <p style="font-weight:600;margin:.2rem 0;">${app.name}</p>
-          <span class="pill ${badge(app.status)}">${pretty(app.status)}</span>
-        </div>
-
-        <p class="card__note">${app.exp ?? ""}</p>
-
-        <button class="btn" style="margin:.3rem 0;">Applied: ${job.title}</button>
-
-        <label class="muted" style="font-size:.85rem;">Action</label>
-        <div class="actions">
-          <select onchange="updateStatus('${job.id}','${app.id}',this.value)">
-            <option>— Select Action —</option>
-            <option value="VIEW">View Resume</option>
-            <option value="SHORTLIST">Shortlist</option>
-            <option value="REJECT">Reject</option>
-          </select>
-          <a class="btn" href="${app.resume ?? "#"}" target="_blank">Open</a>
-        </div>
+    html += `
+      <div class="card">
+        <h3>${profile.base.name}</h3>
+        <p><b>Applied:</b> ${new Date(a.appliedAt).toLocaleDateString()}</p>
+        <p><b>Skills:</b> ${profile.skill.skills ?? "—"}</p>
+        <p><b>Education:</b> ${profile.edu.length ? profile.edu[0].degree+" ("+profile.edu[0].school+")" : "—"}</p>
+        <p><b>Experience:</b> ${profile.exp.length ? profile.exp[0].title+" @ "+profile.exp[0].company : "—"}</p>
+        <p><b>City:</b> ${profile.skill.city ?? "—"}</p>
       </div>
-      `;
-    });
-  }
+    `;
+  });
+});
 
-  summary.innerHTML = `
-    <span>Total: ${TOTAL}</span>
-    <span>New: ${NEW}</span>
-    <span>Shortlisted: ${SHORT}</span>
-    <span>Rejected: ${REJ}</span>
-  `;
+document.getElementById("applicantsBox").innerHTML = html;
 
-  if(TOTAL===0){
-    wrap.innerHTML = `<p style="padding:20px;">No applicants yet.</p>`;
-  }
-}
-
-/* ========== UPDATE STATUS ========== */
-function updateStatus(jobId, appId, action){
-  if(action==="VIEW") return;
-
-  const apps = getApplicants();
-  const list = apps[jobId];
-  const app = list.find(a => a.id===appId);
-
-  app.status = (action==="SHORTLIST") ? "SHORTLISTED" : "REJECTED";
-
-  saveApplicants(apps);
-  renderApplicants();
-}
-
-/* ========== HELPERS ========== */
-const pretty = s => s.charAt(0) + s.slice(1).toLowerCase();
-const badge  = s => s==="REJECTED" ? "pill--bad" : "pill--ok";
-
-/* BOOT */
-renderApplicants();
 </script>
 
 </body>

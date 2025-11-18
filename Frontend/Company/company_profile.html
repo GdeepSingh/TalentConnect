@@ -32,7 +32,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      margin: -60px 0 1rem 1rem; /* overlaps banner */
+      margin: -60px 0 1rem 1rem;
       overflow: hidden;
       position: relative;
     }
@@ -41,12 +41,22 @@
       height: 100%;
       object-fit: contain;
     }
-
     .profile-card {
-  max-width: 1200px;   /* broader than default */
-  margin: 0 auto;      /* center it */
-}
-
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .code-card{
+      margin-top:1rem;
+      padding:0.75rem 1rem;
+      border:1px solid var(--border);
+      border-radius:8px;
+      background:#f9fafb;
+    }
+    .code-value{
+      font-size:1.3rem;
+      font-weight:700;
+      letter-spacing: .12em;
+    }
   </style>
 </head>
 <body>
@@ -62,7 +72,7 @@
         <a class="btn btn--ghost" href="manage_jobs.html">Manage Jobs</a>
         <a class="btn btn--ghost" href="applicants.html">Applicants</a>
         <a class="btn btn--ghost" href="company_profile.html">Company Profile</a>
-        <a class="btn" href="company_login.html">Sign out</a>
+        <a class="btn" href="login.html">Sign out</a>
       </nav>
     </div>
   </header>
@@ -81,7 +91,7 @@
         <span class="muted">Logo</span>
       </div>
 
-      <form action="done.html" method="post" enctype="multipart/form-data">
+      <form id="companyForm" action="#" method="post" enctype="multipart/form-data">
         <label for="banner">Upload Banner</label>
         <input type="file" id="banner" name="banner" accept="image/*" />
 
@@ -132,6 +142,13 @@
           <button class="btn btn--primary" type="submit">Save Changes</button>
         </div>
       </form>
+
+      <!-- Company code box -->
+      <div class="code-card">
+        <p class="card__title" style="font-size:16px;margin-bottom:.3rem;">Company Access Code</p>
+        <p class="card__note">Share this code with colleagues so they can join this company as employers during sign up.</p>
+        <p id="companyCodeDisplay" class="code-value"></p>
+      </div>
     </div>
 
   </main>
@@ -166,6 +183,64 @@
         reader.readAsDataURL(file);
       }
     });
+
+    function generateCode(){
+      // simple XXXX-XXXX format
+      const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+      let s = '';
+      for(let i=0;i<8;i++){
+        s += chars[Math.floor(Math.random()*chars.length)];
+      }
+      return s.slice(0,4) + '-' + s.slice(4);
+    }
+
+    function loadActiveUser(){
+      try { return JSON.parse(localStorage.getItem('tc_active_user')) || null; }
+      catch(e){ return null; }
+    }
+
+    function saveActiveUser(u){
+      localStorage.setItem('tc_active_user', JSON.stringify(u));
+    }
+
+    function syncUserRecord(u){
+      const users = JSON.parse(localStorage.getItem('tc_users')) || [];
+      const idx = users.findIndex(x => x.email === u.email);
+      if(idx !== -1){
+        users[idx] = u;
+        localStorage.setItem('tc_users', JSON.stringify(users));
+      }
+    }
+
+    // Setup company code on load
+    (function initCompanyCode(){
+      let active = loadActiveUser();
+      if(!active || active.role !== 'employer'){
+        document.getElementById('companyCodeDisplay').textContent = '—';
+        return;
+      }
+
+      let companies = JSON.parse(localStorage.getItem('tc_companies')) || {};
+
+      if(!active.companyCode){
+        let newCode;
+        do {
+          newCode = generateCode();
+        } while(companies[newCode]);
+
+        active.companyCode = newCode;
+        saveActiveUser(active);
+        syncUserRecord(active);
+
+        companies[newCode] = {
+          code: newCode,
+          ownerEmail: active.email
+        };
+        localStorage.setItem('tc_companies', JSON.stringify(companies));
+      }
+
+      document.getElementById('companyCodeDisplay').textContent = active.companyCode;
+    })();
   </script>
 </body>
 </html>

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>User Profile · TalentConnect</title>
+<link rel="stylesheet" href="../css/style.css"/>
+
+<style>
+.section-card{
+  background:white;
+  padding:1rem;
+  border-radius:10px;
+  border:1px solid var(--border);
+  margin-bottom:1rem;
+}
+.item-box{
+  background:#f9fafb;
+  border:1px solid var(--border);
+  border-radius:6px;
+  padding:.6rem .8rem;
+  margin-bottom:.5rem;
+}
+.muted{color:#6b7280;font-size:.9rem}
+</style>
+</head>
+
+<body>
+
+<header class="site-header">
+  <div class="site-header__inner">
+    <div class="brand"><div class="brand__logo"></div><span class="brand__name">TalentConnect</span></div>
+    <nav style="display:flex;gap:12px;">
+      <a class="btn btn--ghost" href="user_dashboard.html">Dashboard</a>
+      <a class="btn btn--ghost" href="user_profile.html">Profile</a>
+      <a class="btn" onclick="logout()">Sign out</a>
+    </nav>
+  </div>
+</header>
+
+<main class="container">
+
+<h1 id="welcome">👤 Your Profile</h1>
+
+<!-- ================= EXPERIENCE ================= -->
+<div class="section-card">
+  <h2>Experience</h2>
+  <div id="expBox"></div>
+  <button class="btn" onclick="location.href='experience.html'">✏️ Edit</button>
+</div>
+
+<!-- ================= EDUCATION ================= -->
+<div class="section-card">
+  <h2>Education</h2>
+  <div id="eduBox"></div>
+  <button class="btn" onclick="location.href='education.html'">✏️ Edit</button>
+</div>
+
+<!-- ================= SKILLS ================= -->
+<div class="section-card">
+  <h2>Skills & Info</h2>
+  <div id="skillBox"></div>
+  <button class="btn" onclick="location.href='skills.html'">✏️ Edit</button>
+</div>
+
+</main>
+
+<footer class="site-footer">© 2025 TalentConnect</footer>
+
+<script>
+/* ---------- LOAD USER ---------- */
+const user = JSON.parse(localStorage.getItem("tc_active_user") || "{}");
+document.getElementById("welcome").innerHTML = `👤 ${user.name ?? "User"}'s Profile`;
+
+/* ---------- EXPERIENCE ---------- */
+const exp = JSON.parse(localStorage.getItem("tc_experience") || "[]");
+document.getElementById("expBox").innerHTML =
+  exp.length ? exp.map(x=>`
+   <div class="item-box">
+     <b>${x.title}</b> @ ${x.company}<br>
+     <span class="muted">${x.location} · ${x.start} → ${x.current==="Yes"?"Present":x.end}</span>
+   </div>
+`).join("")
+: `<p class="muted">No experience added.</p>`;
+
+/* ---------- EDUCATION ---------- */
+const edu = JSON.parse(localStorage.getItem("tc_education") || "[]");
+document.getElementById("eduBox").innerHTML =
+  edu.length ? edu.map(x=>`
+   <div class="item-box">
+     <b>${x.degree}</b> in ${x.field}<br>
+     <span class="muted">${x.school} · ${x.startYear} → ${x.endYear}</span>
+   </div>
+`).join("")
+: `<p class="muted">No education added.</p>`;
+
+/* ---------- SKILLS ---------- */
+const info = JSON.parse(localStorage.getItem("tc_skills") || "{}");
+document.getElementById("skillBox").innerHTML = `
+ <p><b>Skills:</b> ${info.skills ?? "—"}</p>
+ <p><b>Languages:</b> ${info.languages ?? "—"}</p>
+ <p><b>City:</b> ${info.city ?? "—"}</p>
+ <p><b>Phone:</b> ${info.phone ?? "—"}</p>
+`;
+
+/* ---------- LOGOUT ---------- */
+function logout(){
+  localStorage.removeItem("tc_active_user");
+  location.href="login.html";
+}
+</script>
+
+</body>
+</html>

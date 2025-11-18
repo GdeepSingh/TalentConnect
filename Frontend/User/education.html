@@ -1,72 +1,188 @@
-<!-- =========================================================================
-     TalentConnect – Step 3: Education (Desktop)
-     Purpose: Add education entries; continue to Skills & Other Info.
-     ========================================================================= -->
 <!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
   <title>Education • TalentConnect</title>
   <link rel="stylesheet" href="../css/style.css" />
+
+<style>
+.edu-box {
+  border: 1px solid var(--border);
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: #f9fafb;
+  margin-bottom: 10px;
+}
+
+.edu-title {
+  font-weight: 700;
+  font-size: 1rem;
+  margin-bottom: 4px;
+}
+
+.edu-dates {
+  font-size: 0.85rem;
+  color: #555;
+}
+
+.edu-delete {
+  color: red;
+  font-size: 0.8rem;
+  cursor: pointer;
+  float: right;
+}
+</style>
+
 </head>
+
 <body>
-  <header class="site-header">
-    <div class="site-header__inner">
-      <div class="brand"><div class="brand__logo"></div><div class="brand__name">TalentConnect</div></div>
-      <div class="muted">Step <strong>3</strong> of 4</div>
+
+<header class="site-header">
+  <div class="site-header__inner">
+    <div class="brand">
+      <div class="brand__logo"></div>
+      <div class="brand__name">TalentConnect</div>
     </div>
-  </header>
+    <div class="muted">Step <strong>3</strong> of 4</div>
+  </div>
+</header>
 
-  <main class="container">
-    <!-- Stepper (Steps 1–2 done; Step 3 active) -->
-    <div class="stepper">
-      <div class="stepper__dot stepper__dot--done"></div>
-      <div class="stepper__dot stepper__dot--done"></div>
-      <div class="stepper__dot stepper__dot--active"></div>
-      <div class="stepper__dot"></div>
-    </div>
+<main class="container">
 
-    <section class="card" aria-labelledby="eduTitle">
-      <h1 id="eduTitle" class="card__title">Education</h1>
-      <p class="card__note">Add your most recent education. You can add more later.</p>
+  <!-- STEPPER -->
+  <div class="stepper">
+    <div class="stepper__dot stepper__dot--done"></div>
+    <div class="stepper__dot stepper__dot--done"></div>
+    <div class="stepper__dot stepper__dot--active"></div>
+    <div class="stepper__dot"></div>
+  </div>
 
-      <form novalidate>
-        <!-- School -->
-        <label for="school">School / College</label>
-        <input id="school" type="text" placeholder="e.g., Langara College" />
+  <!-- CARD -->
+  <section class="card">
 
-        <!-- Degree + Field -->
-        <div class="row">
-          <div>
-            <label for="degree">Degree</label>
-            <input id="degree" type="text" placeholder="e.g., Diploma, B.Sc." />
-          </div>
-          <div>
-            <label for="field">Field of Study</label>
-            <input id="field" type="text" placeholder="e.g., Computer Science" />
-          </div>
+    <h1 class="card__title">Education</h1>
+    <p class="card__note">Add your most recent education. You can add more.</p>
+
+    <!-- 🔹 Saved education shows here -->
+    <div id="eduList"></div>
+
+    <!-- 🔹 FORM -->
+    <form id="eduForm" novalidate>
+
+      <label>School / College</label>
+      <input id="school" type="text" placeholder="e.g., Langara College" />
+
+      <div class="row">
+        <div>
+          <label>Degree</label>
+          <input id="degree" type="text" placeholder="e.g., Diploma, B.Sc." />
         </div>
-
-        <!-- Years -->
-        <div class="row">
-          <div>
-            <label for="startYear">Start Year</label>
-            <input id="startYear" type="number" min="1900" max="2100" placeholder="2023" />
-          </div>
-          <div>
-            <label for="endYear">End Year</label>
-            <input id="endYear" type="number" min="1900" max="2100" placeholder="2025" />
-          </div>
+        <div>
+          <label>Field of Study</label>
+          <input id="field" type="text" placeholder="e.g., Computer Science" />
         </div>
+      </div>
 
-        <div class="actions">
-          <button class="btn btn--ghost" type="button">Save & Add Another</button>
-          <a class="btn btn--primary" href="skills.html">Save & Continue →</a>
+      <div class="row">
+        <div>
+          <label>Start Year</label>
+          <input id="startYear" type="number" placeholder="2021" />
         </div>
-      </form>
-    </section>
-  </main>
+        <div>
+          <label>End Year</label>
+          <input id="endYear" type="number" placeholder="2025" />
+        </div>
+      </div>
 
-  <footer class="site-footer">© 2025 TalentConnect</footer>
+      <div class="actions">
+        <button class="btn btn--ghost" id="addAnother" type="button">
+          Save & Add Another
+        </button>
+
+        <a class="btn btn--primary" id="continueBtn" href="skills.html">
+          Save & Continue →
+        </a>
+      </div>
+
+    </form>
+  </section>
+</main>
+
+<footer class="site-footer">© 2025 TalentConnect</footer>
+
+
+<!-- =============== SCRIPT =============== -->
+<script>
+/* LOCAL STORAGE HELPERS */
+const getEdu  = () => JSON.parse(localStorage.getItem("tc_education")) || [];
+const saveEdu = (list) => localStorage.setItem("tc_education", JSON.stringify(list));
+
+/* REBUILD DISPLAY LIST */
+function rebuildEduList(){
+  const box  = document.getElementById("eduList");
+  const list = getEdu();
+
+  box.innerHTML = "";
+
+  list.forEach((e,i) => {
+    box.innerHTML += `
+      <div class="edu-box">
+        <span class="edu-delete" onclick="deleteEdu(${i})">✖</span>
+        <div class="edu-title">${e.degree} in ${e.field}</div>
+        <div class="edu-dates">${e.school}<br>${e.startYear} → ${e.endYear}</div>
+      </div>
+    `;
+  });
+}
+
+/* DELETE ENTRY */
+function deleteEdu(i){
+  let list = getEdu();
+  list.splice(i,1);
+  saveEdu(list);
+  rebuildEduList();
+}
+
+/* COLLECT FORM DATA */
+function collectEducation(){
+  return {
+    id: Date.now(),
+    school: school.value.trim(),
+    degree: degree.value.trim(),
+    field: field.value.trim(),
+    startYear: startYear.value,
+    endYear: endYear.value
+  };
+}
+
+/* SAVE & ADD ANOTHER */
+document.getElementById("addAnother").addEventListener("click", () => {
+  let e = collectEducation();
+  if(!e.school || !e.degree){
+    alert("⚠ School + Degree required");
+    return;
+  }
+  let list = getEdu();
+  list.push(e);
+  saveEdu(list);
+
+  document.getElementById("eduForm").reset();
+  rebuildEduList();
+});
+
+/* SAVE & CONTINUE */
+document.getElementById("continueBtn").addEventListener("click", () => {
+  let e = collectEducation();
+  if(e.school && e.degree){
+    let list = getEdu();
+    list.push(e);
+    saveEdu(list);
+  }
+});
+
+/* ON LOAD */
+rebuildEduList();
+</script>
+
 </body>
 </html>
