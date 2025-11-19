@@ -4,239 +4,179 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Employer Dashboard · TalentConnect</title>
+
   <link rel="stylesheet" href="../css/style.css"/>
+
   <style>
-    /* small helpers so it works with your existing style.css */
-    .nav{display:flex;gap:12px}
-    .kpi-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
-    @media (max-width:1000px){.kpi-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
-    @media (max-width:640px){.kpi-grid{grid-template-columns:1fr}}
-    .kpi{padding:1rem;border:1px solid var(--border);border-radius:8px;background:var(--panel)}
-    .kpi h4{margin:0 0 .4rem;font-weight:600;font-size:.95rem;color:var(--muted)}
-    .kpi .val{font-size:1.6rem;font-weight:800}
-    .muted{color:#6b7280}
-    .list{list-style:none;margin:0;padding:0}
-    .list li{padding:.6rem .2rem;border-bottom:1px solid var(--border)}
-    .list li:last-child{border-bottom:none}
-    .table-wrap{overflow:auto}
-    .pill{display:inline-block;padding:.2rem .55rem;border-radius:999px;font-size:.78rem}
-    .pill--ok{background:#dcfce7;color:#166534}
-    .pill--bad{background:#fee2e2;color:#991b1b}
+/* =============================
+   DASHBOARD STYLING
+============================= */
+body .bg-dot,
+body .bg-shape {
+  display: none !important;
+}
+
+body {
+  background: #f3f4f6 !important;
+}
+
+.site-header {
+  background: #fff;
+  border-bottom: 1px solid #e5e7eb;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+}
+
+.nav a { font-weight: 500; border-radius: 10px; }
+.nav a:hover { background: rgba(124,58,237,0.1); color: var(--purple); }
+
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.kpi {
+  padding: 20px;
+  border-radius: 14px;
+  color: white;
+  background: linear-gradient(135deg, #7C3AED, #60A5FA);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+}
+
+.dashboard-section {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 20px;
+}
+
+.card { 
+  background: #fff; 
+  border-radius: 16px; 
+  padding: 20px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+}
+
+.table { width: 100%; border-collapse: collapse; }
+.table th { background: #f8fafc; padding: 12px; border-bottom: 1px solid #e5e7eb; }
+.table td { padding: 12px; border-bottom: 1px solid #f1f5f9; }
+
+.pill--ok { background: #dcfce7; color: #166534; padding: 4px 10px; border-radius: 12px; }
+.pill--bad { background: #fee2e2; color: #991b1b; padding: 4px 10px; border-radius: 12px; }
+
   </style>
 </head>
+
 <body>
-  <header class="site-header">
-    <div class="site-header__inner">
-      <a href="company_dashboard.html" class="brand">
-        <span class="brand__logo" aria-hidden="true"></span>
-        <span class="brand__name">TalentConnect</span>
-      </a>
-      <nav class="nav">
-        <a class="btn btn--ghost" href="company_dashboard.html">Dashboard</a>
-        <a class="btn btn--ghost" href="post_job.html">Post a Job</a>
-        <a class="btn btn--ghost" href="manage_jobs.html">Manage Jobs</a>
-        <a class="btn btn--ghost" href="applicants.html">Applicants</a>
-        <a class="btn btn--ghost" href="company_profile.html">Company Profile</a>
-        <a class="btn" href="company_login.html">Sign out</a>
-      </nav>
-    </div>
-  </header>
 
-  <main class="container">
+<header class="site-header">
+  <div class="site-header__inner">
+    <a href="company_dashboard.html" class="brand">
+      <span class="brand__logo"></span>
+      <span class="brand__name">TalentConnect</span>
+    </a>
 
-    <!-- KPIs -->
-    <div class="kpi-grid">
-      <div class="kpi">
-        <h4>Open Roles</h4>
-        <div class="val" id="kpiOpen">0</div>
-        <div class="muted" id="kpiOpenSub">active</div>
-      </div>
-      <div class="kpi">
-        <h4>Total Applicants</h4>
-        <div class="val" id="kpiApplicants">0</div>
-        <div class="muted" id="kpiApplicantsSub">across all roles</div>
-      </div>
-      <div class="kpi">
-        <h4>Shortlisted</h4>
-        <div class="val" id="kpiShortlisted">0</div>
-        <div class="muted">ready for next step</div>
-      </div>
-      <div class="kpi">
-        <h4>New (last 7 days)</h4>
-        <div class="val" id="kpiNewWeek">0</div>
-        <div class="muted">recent applications</div>
-      </div>
-    </div>
+    <nav class="nav">
+      <a class="btn btn--ghost" href="company_dashboard.html">Dashboard</a>
+      <a class="btn btn--ghost" href="post_job.html">Post Job</a>
+      <a class="btn btn--ghost" href="manage_jobs.html">Manage Jobs</a>
+      <a class="btn btn--ghost" href="applicants.html">Applicants</a>
+      <a class="btn btn--ghost" href="company_profile.html">Company Profile</a>
+      <a class="btn" href="company_login.html">Sign Out</a>
+    </nav>
+  </div>
+</header>
 
-    <!-- Two-column: Open Roles / Recent Applicants -->
-    <div class="row">
-      <!-- Open roles -->
-      <div class="card" style="width:100%;">
-        <p class="card__title" style="font-size:20px;">Open Roles</p>
-        <p class="card__note">Quick view of your active postings.</p>
-        <div class="table-wrap">
-          <table class="table">
-            <thead>
-              <tr>
-                <th>Title</th>
-                <th>Location</th>
-                <th>Type</th>
-                <th>Status</th>
-                <th>Applicants</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody id="rolesBody">
-              <!-- injected -->
-            </tbody>
-          </table>
-        </div>
-      </div>
+<main class="container">
 
-      <!-- Recent applicants -->
-      <div class="card" style="width:100%;">
-        <p class="card__title" style="font-size:20px;">Recent Applicants</p>
-        <p class="card__note">Latest applications across your roles (max 5).</p>
-        <ul class="list" id="recentList">
-          <!-- injected -->
-        </ul>
-        <div class="actions" style="margin-top:12px;">
-          <a class="btn" href="applicants.html">View all</a>
-        </div>
-      </div>
+  <!-- KPIs -->
+  <div class="kpi-grid">
+    <div class="kpi"><h4>Open Roles</h4><div class="val" id="kpiOpen">0</div></div>
+    <div class="kpi"><h4>Total Applicants</h4><div class="val" id="kpiApplicants">0</div></div>
+    <div class="kpi"><h4>Shortlisted</h4><div class="val" id="kpiShortlisted">0</div></div>
+    <div class="kpi"><h4>New (7 days)</h4><div class="val" id="kpiNewWeek">0</div></div>
+  </div>
+
+  <div class="dashboard-section">
+
+    <!-- Open Roles -->
+    <div class="card">
+      <p class="card__title">Open Roles</p>
+      <table class="table">
+        <thead>
+          <tr><th>Title</th><th>Location</th><th>Type</th><th>Status</th><th>Applicants</th></tr>
+        </thead>
+        <tbody id="rolesBody"></tbody>
+      </table>
     </div>
 
-  </main>
+    <!-- Recent Applicants -->
+    <div class="card">
+      <p class="card__title">Recent Applicants</p>
+      <ul id="recentList"></ul>
+      <a class="btn btn--primary" href="applicants.html">View All</a>
+    </div>
 
-  <footer class="site-footer">
-    <p>© 2025 TalentConnect · Employers Portal</p>
-  </footer>
+  </div>
+</main>
 
-  <script>
-    // ===== localStorage helpers =====
-    function getJobs(){
-      try { return JSON.parse(localStorage.getItem('tc_jobs')) || []; }
-      catch(e){ return []; }
-    }
-    function setJobs(jobs){
-      localStorage.setItem('tc_jobs', JSON.stringify(jobs));
-    }
-    function getApplicantsMap(){
-      try { return JSON.parse(localStorage.getItem('tc_applicants')) || {}; }
-      catch(e){ return {}; }
-    }
+<footer class="site-footer">
+  © 2025 TalentConnect · Employers Portal
+</footer>
 
-    // ===== small utils =====
-    const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
-    function daysAgo(iso){
-      const d = new Date(iso); const diff = (Date.now()-d.getTime())/86400000;
-      if(isNaN(diff)) return '';
-      if(diff < 1) return 'today';
-      if(diff < 2) return 'yesterday';
-      return `${Math.floor(diff)} days ago`;
-    }
+<script>
+/* ===============================
+   LOCAL STORAGE HELPERS
+=============================== */
+function getJobs(){ return JSON.parse(localStorage.getItem("tc_jobs")) || []; }
+function getApplicants(){ return JSON.parse(localStorage.getItem("tc_applicants")) || {}; }
 
-    // ===== aggregate metrics =====
-    function aggregate(){
-      const jobs = getJobs();
-      const appsMap = getApplicantsMap();
+/* ===============================
+   RENDER DASHBOARD
+=============================== */
+function renderDashboard(){
+  const jobs = getJobs();
+  const appsMap = getApplicants();
 
-      // compute per-job applicant counts if not set
-      jobs.forEach(j => {
-        const arr = appsMap[j.id] || [];
-        j.applicantsCount = arr.length;
-      });
-      setJobs(jobs); // keep counts in sync for manage_jobs table if used
+  // KPI: Open roles
+  document.getElementById("kpiOpen").textContent = jobs.filter(j => j.status === "Open").length;
 
-      const openRoles = jobs.filter(j => j.status === 'Open');
-      const totalApplicants = Object.values(appsMap).reduce((a,arr)=>a + (arr?.length || 0), 0);
-      const shortlisted = Object.values(appsMap).flat().filter(a => a.status === 'SHORTLISTED').length;
+  // KPI: Total applicants
+  let totalApps = 0;
+  Object.values(appsMap).forEach(a => totalApps += a.length);
+  document.getElementById("kpiApplicants").textContent = totalApps;
 
-      const weekAgo = Date.now() - 7*24*60*60*1000;
-      const newWeek = Object.values(appsMap).flat().filter(a => new Date(a.appliedAt).getTime() >= weekAgo).length;
+  // KPI: Shortlisted
+  let shortlisted = 0;
+  Object.values(appsMap).flat().forEach(a => { if(a.status === "SHORTLISTED") shortlisted++; });
+  document.getElementById("kpiShortlisted").textContent = shortlisted;
 
-      // flatten for recent list with job title
-      const byJobTitle = id => (jobs.find(j => j.id === id)?.title || 'Unknown Role');
-      const recent = Object.entries(appsMap).flatMap(([jobId, arr]) =>
-        (arr || []).map(a => ({...a, jobId, jobTitle: byJobTitle(jobId)}))
-      ).sort((a,b) => new Date(b.appliedAt) - new Date(a.appliedAt)).slice(0,5);
+  // KPI: New last 7 days
+  const weekAgo = Date.now() - 7*24*60*60*1000;
+  let newApps = Object.values(appsMap).flat().filter(a => new Date(a.appliedAt) >= weekAgo).length;
+  document.getElementById("kpiNewWeek").textContent = newApps;
 
-      return {jobs, appsMap, openRoles, totalApplicants, shortlisted, newWeek, recent};
-    }
+  /* === Open roles table === */
+  let rolesHTML = "";
+  jobs.forEach(j => {
+    rolesHTML += `
+      <tr>
+        <td>${j.title}</td>
+        <td>${j.location}</td>
+        <td>${j.type}</td>
+        <td>${j.status === "Open" ? '<span class="pill--ok">Open</span>' : '<span class="pill--bad">Closed</span>'}</td>
+        <td>${j.applicants ?? 0}</td>
+      </tr>`;
+  });
+  document.getElementById("rolesBody").innerHTML = rolesHTML || "<tr><td colspan='5'>No jobs posted yet.</td></tr>";
 
-    // ===== render KPIs =====
-    function renderKPIs(state){
-      document.getElementById('kpiOpen').textContent = state.openRoles.length;
-      document.getElementById('kpiApplicants').textContent = state.totalApplicants;
-      document.getElementById('kpiShortlisted').textContent = state.shortlisted;
-      document.getElementById('kpiNewWeek').textContent = state.newWeek;
+  /* === Recent applicants list === */
+  const recentList = document.getElementById("recentList");
+  recentList.innerHTML = "<li>No recent applicants.</li>";
+}
 
-      const openSub = document.getElementById('kpiOpenSub');
-      openSub.textContent = state.openRoles.length === 1 ? 'active role' : 'active roles';
+renderDashboard();
+</script>
 
-      const appSub = document.getElementById('kpiApplicantsSub');
-      appSub.textContent = 'across all roles';
-    }
-
-    // ===== render roles table =====
-    function renderRoles(state){
-      const tbody = document.getElementById('rolesBody');
-      if(!state.jobs.length){
-        tbody.innerHTML = `<tr><td colspan="6" class="muted">No jobs yet. Post your first job.</td></tr>`;
-        return;
-      }
-      const rows = state.jobs.map(j => `
-        <tr data-id="${esc(j.id)}">
-          <td>${esc(j.title)}</td>
-          <td>${esc(j.location || '')}</td>
-          <td>${esc(j.type || '')}</td>
-          <td>${j.status === 'Open' ? '<span class="pill pill--ok">Open</span>' : '<span class="pill pill--bad">Closed</span>'}</td>
-          <td>${j.applicantsCount || 0}</td>
-          <td>
-            <a class="btn" href="applicants.html">View Applicants</a>
-            <a class="btn" href="post_job.html?edit=1" onclick="localStorage.setItem('tc_edit_job_id','${esc(j.id)}')">Edit</a>
-            <button class="btn" onclick="toggleStatus('${esc(j.id)}')">${j.status === 'Open' ? 'Close' : 'Reopen'}</button>
-          </td>
-        </tr>
-      `).join('');
-      tbody.innerHTML = rows;
-    }
-
-    // ===== render recent applicants =====
-    function renderRecent(state){
-      const list = document.getElementById('recentList');
-      if(!state.recent.length){
-        list.innerHTML = `<li class="muted">No recent applications.</li>`;
-        return;
-      }
-      list.innerHTML = state.recent.map(a => `
-        <li>
-          <strong>${esc(a.name)}</strong> → ${esc(a.jobTitle)}
-          <span class="muted">(${daysAgo(a.appliedAt)})</span><br/>
-          <span class="muted">${esc((a.skills || []).join(', '))}${a.location ? ' · ' + esc(a.location) : ''}</span>
-        </li>
-      `).join('');
-    }
-
-    // ===== actions =====
-    function toggleStatus(id){
-      const jobs = getJobs();
-      const idx = jobs.findIndex(j => j.id === id);
-      if(idx === -1) return;
-      jobs[idx].status = jobs[idx].status === 'Open' ? 'Closed' : 'Open';
-      setJobs(jobs);
-      boot();
-    }
-    window.toggleStatus = toggleStatus;
-
-    // ===== boot =====
-    function boot(){
-      const state = aggregate();
-      renderKPIs(state);
-      renderRoles(state);
-      renderRecent(state);
-    }
-    boot();
-  </script>
 </body>
 </html>

@@ -1,81 +1,117 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Company Sign Up · TalentConnect</title>
-  <link rel="stylesheet" href="../css/style.css"/>
+  <meta charset="UTF-8">
+  <title>Employer Sign Up • TalentConnect</title>
+  <link rel="stylesheet" href="../css/style.css">
 </head>
 <body>
-  <header class="site-header">
-    <div class="site-header__inner">
-      <a href="#" class="brand" style="text-decoration:none;color:inherit;">
-        <span class="brand__logo" aria-hidden="true"></span>
-        <span class="brand__name">TalentConnect</span>
-      </a>
-    </div>
-  </header>
-  <main class="container">
 
-  <div class="card">
-    <p class="card__title">Create Employer Account</p>
-    <p class="card__note">List jobs, manage applicants, and build your company brand.</p>
+<div class="bg-dot"></div>
+<div class="bg-shape a"></div>
+<div class="bg-shape b"></div>
 
-    <form action="company_dashboard.html" method="post">
-      <div class="row">
-        <div>
-          <label for="companyName">Company Name</label>
-          <input type="text" id="companyName" name="companyName" placeholder="Your Company Inc." required/>
-        </div>
-        <div>
-          <label for="industry">Industry</label>
-          <input type="text" id="industry" name="industry" placeholder="Software, Retail, Healthcare…" />
-        </div>
+<header class="site-header">
+  <div class="site-header__inner">
+    <div class="brand"><div class="brand__logo"></div><div class="brand__name">TalentConnect</div></div>
+    <div class="muted">Already have an account? <a href="company_login.html">Log in</a></div>
+  </div>
+</header>
+
+<main class="container">
+  <section class="card">
+    <h1 class="card__title">Create Employer Account</h1>
+    <p class="card__note">Sign up to manage jobs & applicants.</p>
+
+    <form id="signupForm">
+
+      <label>Full Name</label>
+      <input id="name" type="text" required>
+
+      <label>Email</label>
+      <input id="email" type="email" required>
+
+      <label>Password</label>
+      <input id="password" type="password" required>
+
+      <label>Are you the first person from this company?</label>
+      <select id="ownerCheck">
+        <option value="yes">Yes, I am the company owner</option>
+        <option value="no">No, I have a company code</option>
+      </select>
+
+      <div id="codeBox" style="display:none;">
+        <label>Enter Company Code</label>
+        <input id="companyCodeInput" type="text" placeholder="XXXX-XXXX">
       </div>
-
-      <div class="row">
-        <div>
-          <label for="companyEmail">Work Email</label>
-          <input type="email" id="companyEmail" name="companyEmail" placeholder="talent@yourcompany.com" required/>
-        </div>
-        <div>
-          <label for="size">Company Size</label>
-          <select id="size" name="size">
-            <option value="">Select size</option>
-            <option>1–10</option>
-            <option>11–50</option>
-            <option>51–200</option>
-            <option>201–500</option>
-            <option>500+</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="row">
-        <div>
-          <label for="website">Website</label>
-          <input type="text" id="website" name="website" placeholder="https://yourcompany.com"/>
-        </div>
-        <div>
-          <label for="location">HQ Location</label>
-          <input type="text" id="location" name="location" placeholder="City, Country"/>
-        </div>
-      </div>
-
-      <label for="about">About Company</label>
-      <textarea id="about" name="about" rows="4" placeholder="1–2 paragraphs about your mission, product, and culture."></textarea>
 
       <div class="actions">
-        <a class="btn" href="company_login.html">Already have an account?</a>
         <button class="btn btn--primary" type="submit">Create Account</button>
       </div>
-    </form>
-  </div>
 
-  </main>
-  <footer class="site-footer">
-    <p>© 2025 TalentConnect · Employers Portal</p>
-  </footer>
+      <p id="msg" class="card__note"></p>
+    </form>
+  </section>
+</main>
+
+<script>
+function generateCode(){
+  const chars="ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  let s="";
+  for(let i=0;i<8;i++) s+=chars[Math.floor(Math.random()*chars.length)];
+  return s.slice(0,4)+"-"+s.slice(4);
+}
+
+document.getElementById("ownerCheck").addEventListener("change", e=>{
+  document.getElementById("codeBox").style.display = 
+    e.target.value==="no" ? "block" : "none";
+});
+
+document.getElementById("signupForm").addEventListener("submit", e=>{
+  e.preventDefault();
+  let name=document.getElementById("name").value.trim();
+  let email=document.getElementById("email").value.trim();
+  let pass=document.getElementById("password").value.trim();
+  let owner=document.getElementById("ownerCheck").value;
+  let inputCode=document.getElementById("companyCodeInput").value.trim();
+  let msg=document.getElementById("msg");
+
+  let users=JSON.parse(localStorage.getItem("tc_users"))||[];
+  if(users.find(u=>u.email===email)) {
+    msg.textContent="❌ Email already exists.";
+    msg.style.color="red";
+    return;
+  }
+
+  let companies=JSON.parse(localStorage.getItem("tc_companies"))||{};
+  let finalCode="";
+
+  if(owner==="yes"){
+    finalCode=generateCode();
+    companies[finalCode]={ owner:email, employees:[email] };
+  } else {
+    if(!companies[inputCode]) {
+      msg.textContent="❌ Invalid company code.";
+      msg.style.color="red";
+      return;
+    }
+    finalCode=inputCode;
+    companies[inputCode].employees.push(email);
+  }
+
+  let newUser={
+    name,email,password:pass,role:"employer",
+    companyCode:finalCode
+  };
+
+  users.push(newUser);
+  localStorage.setItem("tc_users",JSON.stringify(users));
+  localStorage.setItem("tc_companies",JSON.stringify(companies));
+  localStorage.setItem("tc_active_user",JSON.stringify(newUser));
+
+  window.location.href="company_dashboard.html";
+});
+</script>
+
 </body>
 </html>
-
