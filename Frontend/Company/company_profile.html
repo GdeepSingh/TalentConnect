@@ -1,256 +1,218 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Company Profile · TalentConnect</title>
-  <link rel="stylesheet" href="../css/style.css"/>
-  <style>
-     /* REMOVE ALL BACKGROUND SHAPES ONLY ON THIS PAGE */
-  body .bg-dot,
-  body .bg-shape {
-    display: none !important;
-  }
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Company Profile · TalentConnect</title>
+    <link rel="stylesheet" href="../css/style.css" />
+    <style>
+      /* REMOVE ALL BACKGROUND SHAPES ONLY ON THIS PAGE */
+      body .bg-dot,
+      body .bg-shape {
+        display: none !important;
+      }
 
-  /* OPTIONAL: Set a clean plain background */
-  body {
-    background: #f8fafc !important;
-  }
-    .profile-banner {
-      width: 100%;
-      height: 180px;
-      background: #e5e7eb;
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 1rem;
-      overflow: hidden;
-      position: relative;
-    }
-    .profile-banner img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-    .profile-logo {
-      width: 120px;
-      height: 120px;
-      border-radius: 8px;
-      background: #f3f4f6;
-      border: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: -60px 0 1rem 1rem;
-      overflow: hidden;
-      position: relative;
-    }
-    .profile-logo img {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-    }
-    .profile-card {
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-    .code-card{
-      margin-top:1rem;
-      padding:0.75rem 1rem;
-      border:1px solid var(--border);
-      border-radius:8px;
-      background:#f9fafb;
-    }
-    .code-value{
-      font-size:1.3rem;
-      font-weight:700;
-      letter-spacing: .12em;
-    }
-  </style>
-</head>
-<body>
-  <header class="site-header">
-    <div class="site-header__inner">
-      <a href="company_dashboard.html" class="brand" style="text-decoration:none;color:inherit;">
-        <span class="brand__logo" aria-hidden="true"></span>
-        <span class="brand__name">TalentConnect</span>
-      </a>
-      <nav style="display:flex;gap:12px;">
-        <a class="btn btn--ghost" href="company_dashboard.html">Dashboard</a>
-        <a class="btn btn--ghost" href="post_job.html">Post a Job</a>
-        <a class="btn btn--ghost" href="manage_jobs.html">Manage Jobs</a>
-        <a class="btn btn--ghost" href="applicants.html">Applicants</a>
-        <a class="btn btn--ghost" href="company_profile.html">Company Profile</a>
-        <a class="btn" href="login.html">Sign out</a>
-      </nav>
-    </div>
-  </header>
+      /* OPTIONAL: Set a clean plain background */
+      body {
+        background: #f8fafc !important;
+      }
+      .profile-banner {
+        width: 100%;
+        height: 180px;
+        background: #e5e7eb;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1rem;
+        overflow: hidden;
+        position: relative;
+      }
+      .profile-banner img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      .profile-logo {
+        width: 120px;
+        height: 120px;
+        border-radius: 8px;
+        background: #f3f4f6;
+        border: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: -60px 0 1rem 1rem;
+        overflow: hidden;
+        position: relative;
+      }
+      .profile-logo img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+      }
+      .profile-card {
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+      .code-card {
+        margin-top: 1rem;
+        padding: 0.75rem 1rem;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        background: #f9fafb;
+      }
+      .code-value {
+        font-size: 1.3rem;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+      }
+    </style>
+  </head>
+  <body>
+    <script defer>
+      // ============================
+      // LOAD COMPANY INFO FROM PHP
+      // ============================
+      fetch("../../Backend/companyProfile.php")
+        .then((res) => res.json())
+        .then((data) => {
+          document.getElementById("cName").value = data.company_name;
+          document.getElementById("cIndustry").value = data.industry;
+          document.getElementById("cLocation").value = data.hq_city;
+          document.getElementById("cAbout").value = data.description;
 
-  <main class="container">
+          if (data.banner) {
+            document.getElementById(
+              "bannerPreview"
+            ).innerHTML = `<img src="../../Backend/${data.banner}" style="width:100%;height:100%;object-fit:cover;">`;
+          }
 
-    <div class="card profile-card">
-      <p class="card__title">Company Profile</p>
-      <p class="card__note">Keep your company information up to date for candidates.</p>
+          if (data.logo) {
+            document.getElementById(
+              "logoPreview"
+            ).innerHTML = `<img src="../../Backend/${data.logo}" style="width:100%;height:100%;object-fit:contain;">`;
+          }
 
-      <!-- Preview section -->
-      <div class="profile-banner" id="bannerPreview">
-        <span class="muted">Banner Preview</span>
+          document.getElementById("companyCodeDisplay").textContent =
+            data.company_code ?? "No code yet";
+        })
+        .catch((err) => console.error("Profile load error:", err));
+    </script>
+
+    <header class="site-header">
+      <div class="site-header__inner">
+        <a
+          href="company_dashboard.html"
+          class="brand"
+          style="text-decoration: none; color: inherit"
+        >
+          <span class="brand__logo" aria-hidden="true"></span>
+          <span class="brand__name">TalentConnect</span>
+        </a>
+        <nav style="display: flex; gap: 12px">
+          <a class="btn btn--ghost" href="company_dashboard.html">Dashboard</a>
+          <a class="btn btn--ghost" href="post_job.html">Post a Job</a>
+          <a class="btn btn--ghost" href="manage_jobs.html">Manage Jobs</a>
+          <a class="btn btn--ghost" href="applicants.html">Applicants</a>
+          <a class="btn btn--ghost" href="company_profile.html"
+            >Company Profile</a
+          >
+          <a class="btn" href="login.html">Sign out</a>
+        </nav>
       </div>
-      <div class="profile-logo" id="logoPreview">
-        <span class="muted">Logo</span>
+    </header>
+
+    <main class="container">
+      <div class="card profile-card">
+        <p class="card__title">Company Profile</p>
+        <p class="card__note">
+          Keep your company information up to date for candidates.
+        </p>
+
+        <!-- Preview section -->
+        <div class="profile-banner" id="bannerPreview">
+          <span class="muted">Banner Preview</span>
+        </div>
+        <div class="profile-logo" id="logoPreview">
+          <span class="muted">Logo</span>
+        </div>
+
+        <form
+          id="companyForm"
+          action="../../Backend/companyProfile.php"
+          method="post"
+          enctype="multipart/form-data"
+        >
+          <label for="banner">Upload Banner</label>
+          <input type="file" id="banner" name="banner" accept="image/*" />
+
+          <label for="logo">Upload Logo</label>
+          <input type="file" id="logo" name="logo" accept="image/*" />
+
+          <div class="row">
+            <div>
+              <label for="cName">Company Name</label>
+              <input
+                type="text"
+                id="cName"
+                name="cName"
+                placeholder="Your Company Inc."
+              />
+            </div>
+            <div>
+              <label for="cIndustry">Industry</label>
+              <input
+                type="text"
+                id="cIndustry"
+                name="cIndustry"
+                placeholder="Software, Retail, Healthcare…"
+              />
+            </div>
+          </div>
+
+          <div class="row">
+            <div>
+              <label for="cLocation">HQ Location</label>
+              <input
+                type="text"
+                id="cLocation"
+                name="cLocation"
+                placeholder="City, Country"
+              />
+            </div>
+          </div>
+
+          <label for="cAbout">About</label>
+          <textarea
+            id="cAbout"
+            name="cAbout"
+            rows="5"
+            placeholder="Describe your mission, values, and products."
+          ></textarea>
+
+          <div class="actions">
+            <a class="btn" href="company_dashboard.html">Cancel</a>
+            <button class="btn btn--primary" type="submit">Save Changes</button>
+          </div>
+        </form>
+
+        <!-- Company code box -->
+        <div class="code-card">
+          <p class="card__title" style="font-size: 16px; margin-bottom: 0.3rem">
+            Company Access Code
+          </p>
+          <p class="card__note">
+            Share this code with colleagues so they can join this company as
+            employers during sign up.
+          </p>
+          <p id="companyCodeDisplay" class="code-value"></p>
+        </div>
       </div>
+    </main>
 
-      <form id="companyForm" action="#" method="post" enctype="multipart/form-data">
-        <label for="banner">Upload Banner</label>
-        <input type="file" id="banner" name="banner" accept="image/*" />
-
-        <label for="logo">Upload Logo</label>
-        <input type="file" id="logo" name="logo" accept="image/*" />
-
-        <div class="row">
-          <div>
-            <label for="cName">Company Name</label>
-            <input type="text" id="cName" name="cName" placeholder="Your Company Inc." />
-          </div>
-          <div>
-            <label for="cIndustry">Industry</label>
-            <input type="text" id="cIndustry" name="cIndustry" placeholder="Software, Retail, Healthcare…" />
-          </div>
-        </div>
-
-        <div class="row">
-          <div>
-            <label for="cWebsite">Website</label>
-            <input type="text" id="cWebsite" name="cWebsite" placeholder="https://yourcompany.com" />
-          </div>
-          <div>
-            <label for="cLocation">HQ Location</label>
-            <input type="text" id="cLocation" name="cLocation" placeholder="City, Country" />
-          </div>
-        </div>
-
-        <div class="row">
-          <div>
-            <label for="linkedIn">LinkedIn</label>
-            <input type="text" id="linkedIn" name="linkedIn" placeholder="https://linkedin.com/company/yourcompany" />
-          </div>
-          <div>
-            <label for="careers">Careers Page</label>
-            <input type="text" id="careers" name="careers" placeholder="https://yourcompany.com/careers" />
-          </div>
-        </div>
-
-        <label for="cAbout">About</label>
-        <textarea id="cAbout" name="cAbout" rows="5" placeholder="Describe your mission, values, and products."></textarea>
-
-        <label for="benefits">Benefits</label>
-        <textarea id="benefits" name="benefits" rows="4" placeholder="Health, dental, RRSP match, education stipend, etc."></textarea>
-
-        <div class="actions">
-          <a class="btn" href="company_dashboard.html">Cancel</a>
-          <button class="btn btn--primary" type="submit">Save Changes</button>
-        </div>
-      </form>
-
-      <!-- Company code box -->
-      <div class="code-card">
-        <p class="card__title" style="font-size:16px;margin-bottom:.3rem;">Company Access Code</p>
-        <p class="card__note">Share this code with colleagues so they can join this company as employers during sign up.</p>
-        <p id="companyCodeDisplay" class="code-value"></p>
-      </div>
-    </div>
-
-  </main>
-
-  <footer class="site-footer">
-    <p>© 2025 TalentConnect · Employers Portal</p>
-  </footer>
-
-  <script>
-    // Preview Banner
-    document.getElementById('banner').addEventListener('change', function(){
-      const file = this.files[0];
-      if(file){
-        const reader = new FileReader();
-        reader.onload = e => {
-          document.getElementById('bannerPreview').innerHTML =
-            `<img src="${e.target.result}" alt="Banner">`;
-        };
-        reader.readAsDataURL(file);
-      }
-    });
-
-    // Preview Logo
-    document.getElementById('logo').addEventListener('change', function(){
-      const file = this.files[0];
-      if(file){
-        const reader = new FileReader();
-        reader.onload = e => {
-          document.getElementById('logoPreview').innerHTML =
-            `<img src="${e.target.result}" alt="Logo">`;
-        };
-        reader.readAsDataURL(file);
-      }
-    });
-
-    function generateCode(){
-      // simple XXXX-XXXX format
-      const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-      let s = '';
-      for(let i=0;i<8;i++){
-        s += chars[Math.floor(Math.random()*chars.length)];
-      }
-      return s.slice(0,4) + '-' + s.slice(4);
-    }
-
-    function loadActiveUser(){
-      try { return JSON.parse(localStorage.getItem('tc_active_user')) || null; }
-      catch(e){ return null; }
-    }
-
-    function saveActiveUser(u){
-      localStorage.setItem('tc_active_user', JSON.stringify(u));
-    }
-
-    function syncUserRecord(u){
-      const users = JSON.parse(localStorage.getItem('tc_users')) || [];
-      const idx = users.findIndex(x => x.email === u.email);
-      if(idx !== -1){
-        users[idx] = u;
-        localStorage.setItem('tc_users', JSON.stringify(users));
-      }
-    }
-
-    // Setup company code on load
-    (function initCompanyCode(){
-      let active = loadActiveUser();
-      if(!active || active.role !== 'employer'){
-        document.getElementById('companyCodeDisplay').textContent = '—';
-        return;
-      }
-
-      let companies = JSON.parse(localStorage.getItem('tc_companies')) || {};
-
-      if(!active.companyCode){
-        let newCode;
-        do {
-          newCode = generateCode();
-        } while(companies[newCode]);
-
-        active.companyCode = newCode;
-        saveActiveUser(active);
-        syncUserRecord(active);
-
-        companies[newCode] = {
-          code: newCode,
-          ownerEmail: active.email
-        };
-        localStorage.setItem('tc_companies', JSON.stringify(companies));
-      }
-
-      document.getElementById('companyCodeDisplay').textContent = active.companyCode;
-    })();
-  </script>
-</body>
+    <footer class="site-footer">
+      <p>© 2025 TalentConnect · Employers Portal</p>
+    </footer>
+  </body>
 </html>

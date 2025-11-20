@@ -23,30 +23,22 @@
     <h1 class="card__title">Create Employer Account</h1>
     <p class="card__note">Sign up to manage jobs & applicants.</p>
 
-    <form id="signupForm">
+    <form id="signupForm" action="../../Backend/companysignlogin.php" method="post">
 
       <label>Full Name</label>
-      <input id="name" type="text" required>
+      <input id="name" type="text" placeholder="John Doe" name="fullname" required>
 
-      <label>Email</label>
-      <input id="email" type="email" required>
+      <label>Company Email</label>
+      <input id="Compmail" type="email" placeholder="hr@yourcompany.com" name="Compmail" required>
+
+      <label>Personal Email</label>
+      <input id="email" type="email" placeholder="hr@yourcompany.com" name="email" required>
 
       <label>Password</label>
-      <input id="password" type="password" required>
-
-      <label>Are you the first person from this company?</label>
-      <select id="ownerCheck">
-        <option value="yes">Yes, I am the company owner</option>
-        <option value="no">No, I have a company code</option>
-      </select>
-
-      <div id="codeBox" style="display:none;">
-        <label>Enter Company Code</label>
-        <input id="companyCodeInput" type="text" placeholder="XXXX-XXXX">
-      </div>
+      <input id="password" type="password" placeholder="••••••••" name="password" required>
 
       <div class="actions">
-        <button class="btn btn--primary" type="submit">Create Account</button>
+        <input type="submit" name="signup" value="Sign Up">
       </div>
 
       <p id="msg" class="card__note"></p>
@@ -54,64 +46,7 @@
   </section>
 </main>
 
-<script>
-function generateCode(){
-  const chars="ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-  let s="";
-  for(let i=0;i<8;i++) s+=chars[Math.floor(Math.random()*chars.length)];
-  return s.slice(0,4)+"-"+s.slice(4);
-}
 
-document.getElementById("ownerCheck").addEventListener("change", e=>{
-  document.getElementById("codeBox").style.display = 
-    e.target.value==="no" ? "block" : "none";
-});
-
-document.getElementById("signupForm").addEventListener("submit", e=>{
-  e.preventDefault();
-  let name=document.getElementById("name").value.trim();
-  let email=document.getElementById("email").value.trim();
-  let pass=document.getElementById("password").value.trim();
-  let owner=document.getElementById("ownerCheck").value;
-  let inputCode=document.getElementById("companyCodeInput").value.trim();
-  let msg=document.getElementById("msg");
-
-  let users=JSON.parse(localStorage.getItem("tc_users"))||[];
-  if(users.find(u=>u.email===email)) {
-    msg.textContent="❌ Email already exists.";
-    msg.style.color="red";
-    return;
-  }
-
-  let companies=JSON.parse(localStorage.getItem("tc_companies"))||{};
-  let finalCode="";
-
-  if(owner==="yes"){
-    finalCode=generateCode();
-    companies[finalCode]={ owner:email, employees:[email] };
-  } else {
-    if(!companies[inputCode]) {
-      msg.textContent="❌ Invalid company code.";
-      msg.style.color="red";
-      return;
-    }
-    finalCode=inputCode;
-    companies[inputCode].employees.push(email);
-  }
-
-  let newUser={
-    name,email,password:pass,role:"employer",
-    companyCode:finalCode
-  };
-
-  users.push(newUser);
-  localStorage.setItem("tc_users",JSON.stringify(users));
-  localStorage.setItem("tc_companies",JSON.stringify(companies));
-  localStorage.setItem("tc_active_user",JSON.stringify(newUser));
-
-  window.location.href="company_dashboard.html";
-});
-</script>
 
 </body>
 </html>
