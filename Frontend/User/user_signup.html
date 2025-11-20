@@ -7,7 +7,6 @@
 </head>
 <body>
 
-<!-- Background Shapes -->
 <div class="bg-dot"></div>
 <div class="bg-shape a"></div>
 <div class="bg-shape b"></div>
@@ -29,46 +28,43 @@
     <h1 class="card__title">Create your account</h1>
     <p class="card__note">Choose Job Seeker or Employer.</p>
 
-    <!-- FORM SUBMITS TO PHP -->
     <form id="signupForm" action="../../Backend/Usersignlog.php" method="POST">
 
-      <!-- Full Name -->
-      <label>Full Name</label>
-      <input name="fullname" id="name" type="text" placeholder="e.g., John Singh" required>
+      <label>First Name</label>
+      <input name="fname" type="text" placeholder="John" required>
+
+      <label>Last Name</label>
+      <input name="lname" type="text" placeholder="Singh" required>
 
       <!-- Email -->
       <label>Email</label>
-      <input name="email" id="email" type="email" placeholder="you@email.com" required>
+      <input name="email" type="email" placeholder="you@email.com" required>
 
       <!-- Password -->
       <label>Password</label>
-      <input name="password" id="password" type="password" required>
+      <input name="password" type="password" required>
 
       <!-- Confirm Password -->
       <label>Re-enter Password</label>
-      <input name="repassword" id="confirm" type="password" required>
+      <input name="repassword" type="password" required>
 
       <!-- Role -->
       <label>Account Type</label>
       <select name="role" id="role" required>
         <option value="">Select one</option>
-        <option value="seeker">Job Seeker</option>
+        <option value="JobSeeker">Job Seeker</option>
         <option value="CompanyEmployee">Employer</option>
       </select>
 
-      <!-- Company Code Box -->
       <div id="companyBox" style="display:none;">
-        <label>Company Secret Code</label>
-        <input name="companyCode" id="companyCode" type="text" placeholder="Provided by company admin">
+        <label>Company Code</label>
+        <input name="companyCode" type="text" placeholder="Provided by admin">
       </div>
 
       <p id="msg" class="card__note" style="margin-top:8px;"></p>
 
       <div class="actions">
-        <!-- IMPORTANT: name="signup" -->
-        <button class="btn btn--primary" type="submit" name="signup">
-          Create Account →
-        </button>
+        <input type="submit" name="signup" value="Sign Up">
       </div>
 
     </form>
@@ -78,34 +74,9 @@
 <footer class="site-footer">© 2025 TalentConnect</footer>
 
 <script>
-/* SHOW COMPANY CODE BOX */
 document.getElementById("role").addEventListener("change", e => {
   document.getElementById("companyBox").style.display =
-    (e.target.value === "CompanyEmployee") ? "block" : "none";
-});
-
-/* VALIDATE PASSWORD MATCH AND COMPANY CODE */
-document.getElementById("signupForm").addEventListener("submit", e => {
-
-  const pass  = document.getElementById("password").value;
-  const conf  = document.getElementById("confirm").value;
-  const role  = document.getElementById("role").value;
-  const code  = document.getElementById("companyCode").value;
-  const msgEl = document.getElementById("msg");
-
-  if (pass !== conf) {
-    e.preventDefault();
-    msgEl.textContent = "⚠ Passwords do not match.";
-    msgEl.style.color = "red";
-    return;
-  }
-
-  if (role === "CompanyEmployee" && code.trim() === "") {
-    e.preventDefault();
-    msgEl.textContent = "⚠ Employer must enter a company code.";
-    msgEl.style.color = "red";
-    return;
-  }
+    e.target.value === "CompanyEmployee" ? "block" : "none";
 });
 </script>
 
