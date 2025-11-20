@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Work Experience • TalentConnect</title>
+  <link rel="stylesheet" href="../css/style.css" />
+
+  <style>
+.exp-box {
+  border: 1px solid var(--border);
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: #f9fafb;
+  margin-bottom: 10px;
+}
+.exp-title { font-weight:700;font-size:1rem;margin-bottom:4px; }
+.exp-dates { font-size:0.85rem; color:#555; }
+.exp-delete { color:red;font-size:0.8rem;cursor:pointer;float:right; }
+  </style>
+</head>
+
+<body>
+
+<header class="site-header">
+  <div class="site-header__inner">
+    <div class="brand">
+      <div class="brand__logo"></div>
+      <div class="brand__name">TalentConnect</div>
+    </div>
+    <div class="muted">Step <strong>2</strong> of 4</div>
+  </div>
+</header>
+
+<main class="container">
+
+  <div class="stepper">
+    <div class="stepper__dot stepper__dot--done"></div>
+    <div class="stepper__dot stepper__dot--active"></div>
+    <div class="stepper__dot"></div>
+    <div class="stepper__dot"></div>
+  </div>
+
+  <section class="card">
+
+    <h1 class="card__title">Work Experience</h1>
+    <p class="card__note">Add at least one job. You can add more.</p>
+
+    <div id="expList"></div>
+
+    <form id="expForm" novalidate>
+
+      <label>Job Title</label>
+      <input id="jobTitle" type="text" placeholder="e.g. Sales Associate" />
+
+      <label>Company</label>
+      <input id="company" type="text" placeholder="e.g. Adidas" />
+
+      <div class="row">
+        <div>
+          <label>Location</label>
+          <input id="location" type="text" placeholder="City, Country">
+        </div>
+        <div>
+          <label>Currently working?</label>
+          <select id="current">
+            <option>No</option>
+            <option>Yes</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="row">
+        <div>
+          <label>Start Date</label>
+          <input id="start" type="date">
+        </div>
+        <div>
+          <label>End Date</label>
+          <input id="end" type="date">
+        </div>
+      </div>
+
+      <label>Description (optional)</label>
+      <textarea id="desc" rows="3"></textarea>
+
+      <div class="actions">
+        <button type="button" class="btn btn--ghost" id="addAnother">
+          Save & Add Another
+        </button>
+
+        <button type="button" class="btn btn--primary" id="continueBtn">
+          Save & Continue →
+        </button>
+      </div>
+
+    </form>
+
+  </section>
+</main>
+
+<footer class="site-footer">© 2025 TalentConnect</footer>
+
+<script>
+window.onload = function () {
+
+function getExp() {
+  return JSON.parse(localStorage.getItem("tc_experience")) || [];
+}
+function saveExp(list) {
+  localStorage.setItem("tc_experience", JSON.stringify(list));
+}
+
+function rebuildList() {
+  const box = document.getElementById("expList");
+  const list = getExp();
+  box.innerHTML = "";
+  list.forEach((e,i) => {
+    box.innerHTML += `
+      <div class="exp-box">
+        <span class="exp-delete" onclick="deleteExp(${i})">✖</span>
+        <div class="exp-title">${e.title} – ${e.company}</div>
+        <div class="exp-dates">${e.start} → ${e.current ? "Present" : e.end}</div>
+      </div>`;
+  });
+}
+
+window.deleteExp = function(i){
+  let list = getExp();
+  list.splice(i,1);
+  saveExp(list);
+  rebuildList();
+}
+
+function collectEntry() {
+  return {
+    title: document.getElementById("jobTitle").value.trim(),
+    company: document.getElementById("company").value.trim(),
+    location: document.getElementById("location").value.trim(),
+    current: document.getElementById("current").value === "Yes",
+    start: document.getElementById("start").value,
+    end: document.getElementById("end").value,
+    desc: document.getElementById("desc").value.trim()
+  };
+}
+
+document.getElementById("addAnother").addEventListener("click", () => {
+  let e = collectEntry();
+  if (!e.title || !e.company) return alert("Enter Job Title & Company");
+
+  let list = getExp();
+  list.push(e);
+  saveExp(list);
+
+  document.getElementById("expForm").reset();
+  rebuildList();
+});
+
+document.getElementById("continueBtn").addEventListener("click", async () => {
+  
+  let last = collectEntry();
+  if (last.title && last.company) {
+      let list = getExp();
+      list.push(last);
+      saveExp(list);
+  }
+
+  let list = getExp();
+  if (list.length === 0) return alert("Add at least one job.");
+
+  try {
+    let res = await fetch("../../Backend/userinfo.php", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        type: "experience",
+        experience: list
+      })
+    });
+
+    let result = await res.json();
+    if (result.success) {
+      localStorage.removeItem("tc_experience");
+      window.location.href = "education.html";
+    } else {
+      alert("❌ " + result.error);
+    }
+  } catch (err) {
+    console.error(err);
+    alert("Server error!");
+  }
+});
+
+rebuildList();
+
+}; // END window.onload
+</script>
+
+
+</body>
+</html>

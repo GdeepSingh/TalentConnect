@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Education • TalentConnect</title>
+  <link rel="stylesheet" href="../css/style.css" />
+
+  <style>
+.edu-box {
+  border: 1px solid var(--border);
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: #f9fafb;
+  margin-bottom: 10px;
+}
+.edu-title { font-weight:700;font-size:1rem;margin-bottom:4px; }
+.edu-dates { font-size:0.85rem; color:#555; }
+.edu-delete { color:red;font-size:0.8rem;cursor:pointer;float:right; }
+  </style>
+</head>
+
+<body>
+
+<header class="site-header">
+  <div class="site-header__inner">
+    <div class="brand">
+      <div class="brand__logo"></div>
+      <div class="brand__name">TalentConnect</div>
+    </div>
+    <div class="muted">Step <strong>3</strong> of 4</div>
+  </div>
+</header>
+
+<main class="container">
+
+  <div class="stepper">
+    <div class="stepper__dot stepper__dot--done"></div>
+    <div class="stepper__dot stepper__dot--done"></div>
+    <div class="stepper__dot stepper__dot--active"></div>
+    <div class="stepper__dot"></div>
+  </div>
+
+  <section class="card">
+
+    <h1 class="card__title">Education</h1>
+    <p class="card__note">Add all schools you completed or attended.</p>
+
+    <div id="eduList"></div>
+
+    <form id="eduForm" novalidate>
+
+      <label>School Name</label>
+      <input id="school" type="text" placeholder="Langara College">
+
+      <label>Degree</label>
+      <input id="degree" type="text" placeholder="Diploma, BSc, Certificate">
+
+      <label>Field of Study</label>
+      <input id="field" type="text" placeholder="Computer Science">
+
+      <div class="row">
+        <div>
+          <label>Start Year</label>
+          <input id="startYear" type="number" placeholder="2021">
+        </div>
+        <div>
+          <label>End Year</label>
+          <input id="endYear" type="number" placeholder="2024">
+        </div>
+      </div>
+
+      <div class="actions">
+        <button type="button" class="btn btn--ghost" id="addAnother">
+          Save & Add Another
+        </button>
+
+        <button type="button" class="btn btn--primary" id="continueBtn">
+          Save & Continue →
+        </button>
+      </div>
+
+    </form>
+
+  </section>
+</main>
+
+<footer class="site-footer">© 2025 TalentConnect</footer>
+
+<script>
+function getEdu() {
+  return JSON.parse(localStorage.getItem("tc_education")) || [];
+}
+function saveEdu(list) {
+  localStorage.setItem("tc_education", JSON.stringify(list));
+}
+
+function rebuildList() {
+  const box = document.getElementById("eduList");
+  const list = getEdu();
+  box.innerHTML = "";
+  list.forEach((e,i) => {
+    box.innerHTML += `
+      <div class="edu-box">
+        <span class="edu-delete" onclick="deleteEdu(${i})">✖</span>
+        <div class="edu-title">${e.degree} • ${e.school}</div>
+        <div class="edu-dates">${e.startYear} → ${e.endYear}</div>
+      </div>`;
+  });
+}
+
+window.deleteEdu = function(i){
+  let list = getEdu();
+  list.splice(i,1);
+  saveEdu(list);
+  rebuildList();
+}
+
+function collectEntry() {
+  return {
+    school: document.getElementById("school").value.trim(),
+    degree: document.getElementById("degree").value.trim(),
+    field: document.getElementById("field").value.trim(),
+    startYear: document.getElementById("startYear").value.trim(),
+    endYear: document.getElementById("endYear").value.trim()
+  };
+}
+
+document.getElementById("addAnother").addEventListener("click", () => {
+  let e = collectEntry();
+  if (!e.school || !e.degree) return alert("Enter school & degree");
+
+  let list = getEdu();
+  list.push(e);
+  saveEdu(list);
+
+  document.getElementById("eduForm").reset();
+  rebuildList();
+});
+
+document.getElementById("continueBtn").addEventListener("click", async () => {
+  
+  let last = collectEntry();
+  if (last.school && last.degree) {
+      let list = getEdu();
+      list.push(last);
+      saveEdu(list);
+  }
+
+  let list = getEdu();
+  if (list.length === 0) return alert("Add at least one education entry.");
+
+  try {
+    let response = await fetch("../../Backend/userinfo.php", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        type: "education",
+        education: list
+      })
+    });
+
+    let text = await response.text();
+    console.log("RAW:", text);
+    let result = JSON.parse(text);
+
+    if (result.success) {
+      localStorage.removeItem("tc_education");
+      window.location.href = "skills.html";
+    } else {
+      alert("❌ " + result.error);
+    }
+
+  } catch (err) {
+    console.error(err);
+    alert("Server error!");
+  }
+});
+
+rebuildList();
+</script>
+
+</body>
+</html>

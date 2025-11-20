@@ -3,12 +3,10 @@
 <head>
   <meta charset="utf-8" />
   <title>Log In • TalentConnect</title>
-
   <link rel="stylesheet" href="../css/style.css" />
 </head>
 <body>
 
-<!-- Background layers -->
 <div class="bg-dot"></div>
 <div class="bg-shape a"></div>
 <div class="bg-shape b"></div>
@@ -19,7 +17,6 @@
       <div class="brand__logo"></div>
       <div class="brand__name">TalentConnect</div>
     </div>
-
     <div class="muted">
       New here? <a href="user_signup.html">Create an account</a>
     </div>
@@ -31,77 +28,25 @@
     <h1 class="card__title">Welcome back</h1>
     <p class="card__note">Log in to continue.</p>
 
-    <form id="loginForm" novalidate>
+    <!-- REAL PHP LOGIN FORM -->
+    <form action="../../Backend/userlogin.php" method="POST">
 
       <label>Email</label>
-      <input id="email" type="email" placeholder="you@example.com" required />
+      <input name="email" type="email" placeholder="you@example.com" required />
 
-      <label style="display:flex;justify-content:space-between;align-items:center;">
-        <span>Password</span>
-        <button type="button" id="togglePwd" class="btn" style="height:32px;padding:0 10px;">Show</button>
-      </label>
-
-      <input id="password" type="password" placeholder="Enter your password" required />
+      <label>Password</label>
+      <input name="password" type="password" placeholder="Enter your password" required />
 
       <div class="actions">
-        <button class="btn btn--primary" type="submit">Log in</button>
+        <input type="submit" name="login" value="Log in" class="btn btn--primary">
       </div>
 
-      <p id="msg" class="card__note" style="margin-top:8px;"></p>
-
     </form>
+
   </section>
 </main>
 
 <footer class="site-footer">© 2025 TalentConnect</footer>
-
-<script>
-/* Show/hide password */
-const pwd = document.getElementById("password");
-const toggleBtn = document.getElementById("togglePwd");
-
-toggleBtn.addEventListener("click", () => {
-  const isHidden = pwd.type === "password";
-  pwd.type = isHidden ? "text" : "password";
-  toggleBtn.textContent = isHidden ? "Hide" : "Show";
-});
-
-/* LocalStorage helpers */
-function getUsers(){
-  try { return JSON.parse(localStorage.getItem("tc_users")) || []; }
-  catch(e){ return []; }
-}
-
-/* Login handler */
-document.getElementById("loginForm").addEventListener("submit", e => {
-  e.preventDefault();
-
-  const email = document.getElementById("email").value.trim();
-  const pass  = document.getElementById("password").value.trim();
-  const msg   = document.getElementById("msg");
-
-  const users = getUsers();
-  const user  = users.find(u => u.email === email && u.password === pass);
-
-  if(!user){
-    msg.textContent = "❌ Incorrect email or password.";
-    msg.style.color = "red";
-    return;
-  }
-
-  localStorage.setItem("tc_active_user", JSON.stringify(user));
-
-  localStorage.removeItem("tc_experience");
-  localStorage.removeItem("tc_education");
-
-  /* Redirect */
-  if(user.role === "employer"){
-    window.location.href = "../Company/company_dashboard.html";
-  } else {
-    window.location.href = "user_dashboard.html";
-  }
-});
-</script>
 
 </body>
 </html>

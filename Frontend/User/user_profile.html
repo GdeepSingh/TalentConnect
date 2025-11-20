@@ -1,54 +1,77 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>User Profile • TalentConnect</title>
-<link rel="stylesheet" href="../css/style.css">
+  <meta charset="utf-8" />
+  <title>User Profile • TalentConnect</title>
+  <link rel="stylesheet" href="../css/style.css" />
 
-<style>
-  
-.container-box {
-    background: #ffffff;
-    padding: 20px;
-    border-radius: 12px;
-    border: 1px solid #dcdcdc;
-    max-width: 600px;
-    margin: 30px auto;
-}
+  <style>
+     :root {
+    --primary: #6a5acd; /* BUTTON COLOR FIX */
+  }
+    .container-box {
+      background: #ffffff;
+      padding: 25px;
+      border-radius: 12px;
+      border: 1px solid #dcdcdc;
+      max-width: 900px;
+      margin: 40px auto;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
 
-.profile-img {
-    width: 150px;
-    height: 150px;
-    border-radius: 12px;        /* SQUARE with rounded corners */
-    object-fit: cover;
-    border: 2px solid #cbd5e1;
-}
+    .profile-header {
+      display: flex;
+      gap: 30px;
+      align-items: flex-start;
+    }
 
-input, select, textarea {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #d1d5db;
-    border-radius: 8px;
-    margin-top: 5px;
-    margin-bottom: 15px;
-}
+    .profile-img {
+      width: 160px;
+      height: 160px;
+      border-radius: 12px;
+      object-fit: cover;
+      border: 2px solid #cbd5e1;
+      background: #f2f2f2;
+    }
 
-label {
-    font-weight: 600;
-}
+    input, select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      margin-bottom: 15px;
+    }
 
-.btn-save {
-    width: 100%;
-    background: var(--primary);
-    padding: 12px;
-    border-radius: 8px;
-    text-align: center;
-    color: white;
-    font-size: 1rem;
-    cursor: pointer;
-}
-</style>
+    .btn-save {
+      width: 100%;
+      background: var(--primary);
+      padding: 12px;
+      border-radius: 8px;
+      color: white;
+      font-size: 1rem;
+      cursor: pointer;
+      border: none;
+      margin-top: 10px;
+    }
 
+    .flex-row {
+      display: flex;
+      gap: 15px;
+    }
+    .flex-row > div { flex: 1; }
+
+    .section-card {
+      background: white;
+      padding: 15px;
+      border-radius: 10px;
+      border: 1px solid #e5e7eb;
+      margin-top: 20px;
+    }
+
+    .muted {
+      color: #6b7280;
+    }
+  </style>
 </head>
 
 <body>
@@ -59,97 +82,170 @@ label {
       <div class="brand__logo"></div>
       <span class="brand__name">TalentConnect</span>
     </div>
+    <nav style="display:flex;gap:12px;">
+      <a class="btn btn--ghost" href="user_dashboard.html">Dashboard</a>
+      <a class="btn btn--ghost" href="user_profile.html">Profile</a>
+      <a class="btn" href="login.html">Sign out</a>
+    </nav>
   </div>
 </header>
 
-<div class="container-box">
+<main class="container">
 
-    <h1 style="text-align:center;">Edit Your Profile</h1>
-    <br>
+  <div class="container-box">
+    <h1>Edit Your Profile</h1>
+    <p id="statusMsg" class="muted"></p>
 
-    <!-- PHOTO SECTION -->
-    <center>
-        <img id="profilePreview" class="profile-img" 
-             src="../Uploads/user_dummy.png" alt="Profile Photo">
-        <br><br>
+    <div class="profile-header">
 
-        <label><b>Profile Picture</b></label>
-        <input type="file" name="photo" id="photoInput" accept="image/*">
-    </center>
+      <img id="profilePreview" class="profile-img"
+           src="../Uploads/user_dummy.png" alt="Profile Photo">
 
-    <br><hr><br>
+      <form id="profileForm" 
+            action="../../Backend/update_user_profile.php"
+            method="POST" enctype="multipart/form-data">
 
-    <form action="../../Backend/update_user_profile.php" method="POST" enctype="multipart/form-data">
+        <div class="flex-row">
+          <div>
+            <label>First Name</label>
+            <input type="text" name="fname" id="fname">
+          </div>
+          <div>
+            <label>Last Name</label>
+            <input type="text" name="lname" id="lname">
+          </div>
+        </div>
 
-        <!-- First Name -->
-        <label>First Name</label>
-        <input type="text" name="fname" id="fname" placeholder="Enter first name">
+        <div class="flex-row">
+          <div>
+            <label>Age</label>
+            <input type="number" name="age" id="age">
+          </div>
+          <div>
+            <label>Gender</label>
+            <select name="gender" id="gender">
+              <option value="">Select</option>
+              <option>Male</option>
+              <option>Female</option>
+              <option>Others</option>
+            </select>
+          </div>
+        </div>
 
-        <!-- Last Name -->
-        <label>Last Name</label>
-        <input type="text" name="lname" id="lname" placeholder="Enter last name">
+        <div class="flex-row">
+          <div>
+            <label>Email</label>
+            <input type="email" name="email" id="email">
+          </div>
+          <div>
+            <label>Phone</label>
+            <input type="text" name="phone_number" id="phone">
+          </div>
+        </div>
 
-        <!-- Age -->
-        <label>Age</label>
-        <input type="number" name="age" id="age" placeholder="Enter age">
-
-        <!-- Gender -->
-        <label>Gender</label>
-        <select name="gender" id="gender">
-            <option value="">Select gender</option>
-            <option>Male</option>
-            <option>Female</option>
-            <option>Others</option>
-        </select>
-
-        <!-- Email -->
-        <label>Email</label>
-        <input type="email" name="email" id="email">
-
-        <!-- Password -->
-        <label>Password</label>
-        <input type="password" name="password" id="password">
-
-        <!-- Phone -->
-        <label>Phone Number</label>
-        <input type="text" name="phone_number" id="phone" placeholder="+1 604 555 1234">
-
-        <!-- Resume -->
-        <label>Upload Resume (PDF)</label>
-        <input type="file" name="resume" accept=".pdf">
-
-        <!-- Role -->
         <label>Role</label>
         <select name="role" id="role">
-            <option value="">Select</option>
-            <option value="JobSeeker">Job Seeker</option>
-            <option value="CompanyEmployee">Company Employee</option>
+          <option value="">Select</option>
+          <option value="JobSeeker">Job Seeker</option>
+          <option value="CompanyEmployee">Company Employee</option>
         </select>
 
-        <br>
-        <button type="submit" class="btn-save">Save Changes</button>
+        <label>Password (Leave blank to keep same)</label>
+        <input type="password" name="password" id="password">
 
-    </form>
+        <label>Resume (PDF)</label>
+        <input type="file" name="resume" accept=".pdf">
 
-</div>
+        <label>Profile Picture</label>
+        <input type="file" name="photo" id="photoInput" accept="image/*">
+
+        <!-- Save Button INSIDE the form -->
+        <button class="btn-save" type="submit">Save Changes</button>
+      </form>
+
+    </div>
+
+    <!-- EXPERIENCE -->
+    <div class="section-card">
+      <h2>Work Experience</h2>
+      <div id="expBox"></div>
+      <a href="experience.html">Edit Experience</a>
+    </div>
+
+    <!-- EDUCATION -->
+    <div class="section-card">
+      <h2>Education</h2>
+      <div id="eduBox"></div>
+      <a href="education.html">Edit Education</a>
+    </div>
+
+    <!-- SKILLS -->
+    <div class="section-card">
+      <h2>Skills</h2>
+      <div id="skillBox"></div>
+      <a href="skills.html">Edit Skills</a>
+    </div>
+
+  </div>
+
+</main>
 
 <footer class="site-footer">© 2025 TalentConnect</footer>
 
-
-<!-- JS: Auto-remove dummy on upload -->
 <script>
-const preview = document.getElementById("profilePreview");
-const input   = document.getElementById("photoInput");
-
-input.addEventListener("change", function(event) {
-    const file = event.target.files[0];
-
-    if (file) {
-        preview.src = URL.createObjectURL(file); // replace dummy
-    } else {
-        preview.src = "../Uploads/user_dummy.png"; // restore dummy
-    }
+// Preview image after selecting file
+document.getElementById("photoInput").addEventListener("change", e => {
+  const file = e.target.files[0];
+  if (file) {
+    document.getElementById("profilePreview").src = URL.createObjectURL(file);
+  }
 });
+
+// Load user info
+async function loadProfile() {
+  const res = await fetch("../../Backend/get_user_profile.php");
+  const data = await res.json();
+
+  if (!data.success) {
+    document.getElementById("statusMsg").innerText = "Could not load profile.";
+    return;
+  }
+
+  let u = data.user;
+
+  // Fill form
+  document.getElementById("fname").value = u.fname;
+  document.getElementById("lname").value = u.lname;
+  document.getElementById("age").value = u.age;
+  document.getElementById("gender").value = u.gender;
+  document.getElementById("email").value = u.email;
+  document.getElementById("phone").value = u.phone_number;
+  document.getElementById("role").value = u.role;
+
+  if (u.photo_url) {
+    document.getElementById("profilePreview").src = u.photo_url;
+  }
+
+  // Experience
+  document.getElementById("expBox").innerHTML =
+    data.experience.length
+      ? data.experience.map(e => `<div>${e.job_title} @ ${e.company_name}</div>`).join("")
+      : "<p class='muted'>No experience added.</p>";
+
+  // Education
+  document.getElementById("eduBox").innerHTML =
+    data.education.length
+      ? data.education.map(e => `<div>${e.degree} in ${e.field_of_study}</div>`).join("")
+      : "<p class='muted'>No education added.</p>";
+
+  // Skills
+  let s = data.skills;
+  document.getElementById("skillBox").innerHTML =
+    s ? `<p><b>${s.skill_name}</b><br>Languages: ${s.languages}</p>`
+      : "<p class='muted'>No skills saved.</p>";
+}
+
+loadProfile();
 </script>
 
 </body>

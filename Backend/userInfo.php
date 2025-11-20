@@ -1,110 +1,31 @@
 <?php
-
-header("Content-Type: application/json");
-
-
-
 session_start();
 include("database.php");
 
+ini_set("display_errors", 1);
+error_reporting(E_ALL);
 
-// Must be logged in
+/* ----------------------------------------------------------
+   REQUIRE SESSION LOGIN
+---------------------------------------------------------- */
 if (!isset($_SESSION['uid'])) {
+    header("Content-Type: application/json");
     echo json_encode(["success" => false, "error" => "Not logged in"]);
     exit;
 }
 
 $uid = $_SESSION['uid'];
-// Detect JSON request
-$raw = file_get_contents("php://input");
-$data = json_decode($raw, true);
 
-
-
-if (!$data || !isset($data['type'])) {
-    echo json_encode(["success" => false, "error" => "Invalid request"]);
-    exit;
-}
-
-/* ==========================================================
-   SAVE EXPERIENCE
-========================================================== */
-// If JSON received → experience or education
-if ($data && isset($data['type'])) {
-
-    /* EXPERIENCE */
-    if ($data['type'] === "experience") {
-
-        foreach ($data['experience'] as $exp) {
-            if (empty($exp['title']) || empty($exp['company'])) continue;
-
-            $stmt = $conn->prepare("
-                INSERT INTO work_experience
-                (user_id, job_title, company_name, location, start_date, end_date, description)
-                VALUES (?, ?, ?, ?, ?, ?, ?)
-            ");
-
-            $stmt->bind_param("issssss",
-                $uid,
-                $exp['title'],
-                $exp['company'],
-                $exp['location'],
-                $exp['start'],
-                $exp['current'] ? NULL : $exp['end'],
-                $exp['desc']
-            );
-
-            $stmt->execute();
-        }
-
-        echo json_encode(["success" => true]);
-        exit;
-    }
-
-    /* EDUCATION */
-    if ($data['type'] === "education") {
-
-        foreach ($data['education'] as $edu) {
-            if (empty($edu['school']) || empty($edu['degree'])) continue;
-
-            $stmt = $conn->prepare("
-                INSERT INTO education
-                (user_id, school_name, field_of_study, start_date, end_date, degree)
-                VALUES (?, ?, ?, ?, ?, ?)
-            ");
-
-            $stmt->bind_param("isssss",
-                $uid,
-                $edu['school'],
-                $edu['field'],
-                $edu['startYear'] . "-01-01",
-                $edu['endYear'] . "-01-01",
-                $edu['degree']
-            );
-
-            $stmt->execute();
-        }
-
-        echo json_encode(["success" => true]);
-        exit;
-    }
-
-    echo json_encode(["success" => false, "error" => "Unknown JSON type"]);
-    exit;
-}
-
-
-/* ==========================================================
-   SAVE SKILLS (simple POST)
-========================================================== */
+/* ----------------------------------------------------------
+   1) SKILLS (NORMAL POST FORM REQUEST)
+---------------------------------------------------------- */
 if (isset($_POST['type']) && $_POST['type'] === "skills") {
 
     $skills    = trim($_POST['skills'] ?? "");
     $languages = trim($_POST['languages'] ?? "");
     $phone     = trim($_POST['phone'] ?? "");
-    $city      = trim($_POST['city'] ?? "");  // can be ignored if not stored
 
-    // Insert skills only if entered
+    // Insert skills
     if (!empty($skills)) {
         $stmt = $conn->prepare("
             INSERT INTO skills (user_id, skill_name, languages)
@@ -114,7 +35,7 @@ if (isset($_POST['type']) && $_POST['type'] === "skills") {
         $stmt->execute();
     }
 
-    // Update only phone_number in users table (NO city)
+    // Update user's phone number
     if (!empty($phone)) {
         $stmt2 = $conn->prepare("
             UPDATE users SET phone_number = ? WHERE uid = ?
@@ -123,21 +44,106 @@ if (isset($_POST['type']) && $_POST['type'] === "skills") {
         $stmt2->execute();
     }
 
-    // 🟦 Destroy session so user can log in fresh
-    session_unset();
-    session_destroy();
-
+    // Redirect to user profile (NOT login)
     echo "<script>
-    alert('Profile Completed!');
-    window.location.href = '../Frontend/User/done.html';
-</script>";
-exit;
-
+        alert('Skills saved successfully!');
+        window.location.href = '../Frontend/User/user_profile.html';
+    </script>";
+    exit;
 }
 
 
-/* ==========================================================
-   UNKNOWN TYPE
-========================================================== */
+/* ----------------------------------------------------------
+   2) EXPERIENCE + EDUCATION (JSON REQUESTS)
+---------------------------------------------------------- */
+$raw  = file_get_contents("php://input");
+$data = json_decode($raw, true);
+
+// If JSON exists:
+if ($data && isset($data["type"])) {
+
+    header("Content-Type: application/json");
+
+    /* ------------ EXPERIENCE ------------ */
+    if ($data["type"] === "experience") {
+
+        if (!isset($data["experience"]) || !is_array($data["experience"])) {
+            echo json_encode(["success" => false, "error" => "Invalid experience array"]);
+            exit;
+        }
+
+        foreach ($data["experience"] as $exp) {
+
+            if (empty($exp["title"]) || empty($exp["company"])) continue;
+
+            $stmt = $conn->prepare("
+                INSERT INTO work_experience
+                (user_id, job_title, company_name, location, start_date, end_date, description)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+            ");
+
+            $stmt->bind_param("issssss",
+                $uid,
+                $exp["title"],
+                $exp["company"],
+                $exp["location"],
+                $exp["start"],
+                $exp["current"] ? NULL : $exp["end"],
+                $exp["desc"]
+            );
+
+            $stmt->execute();
+        }
+
+        echo json_encode(["success" => true]);
+        exit;
+    }
+
+    /* ------------ EDUCATION ------------ */
+    if ($data["type"] === "education") {
+
+        if (!isset($data["education"]) || !is_array($data["education"])) {
+            echo json_encode(["success" => false, "error" => "Invalid education array"]);
+            exit;
+        }
+
+        foreach ($data["education"] as $edu) {
+
+            if (empty($edu["school"]) || empty($edu["degree"])) continue;
+
+            $start = $edu["startYear"] ? $edu["startYear"] . "-01-01" : NULL;
+            $end   = $edu["endYear"]   ? $edu["endYear"] . "-01-01"   : NULL;
+
+            $stmt = $conn->prepare("
+                INSERT INTO education
+                (user_id, school_name, field_of_study, start_date, end_date, degree)
+                VALUES (?, ?, ?, ?, ?, ?)
+            ");
+
+            $stmt->bind_param("isssss",
+                $uid,
+                $edu["school"],
+                $edu["field"],
+                $start,
+                $end,
+                $edu["degree"]
+            );
+
+            $stmt->execute();
+        }
+
+        echo json_encode(["success" => true]);
+        exit;
+    }
+
+    /* -------- DEFAULT -------- */
+    echo json_encode(["success" => false, "error" => "Unknown JSON type"]);
+    exit;
+}
+
+/* ----------------------------------------------------------
+   UNKNOWN REQUEST
+---------------------------------------------------------- */
 echo json_encode(["success" => false, "error" => "Unknown request type"]);
 exit;
+?>

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Skills • TalentConnect</title>
+<link rel="stylesheet" href="../css/style.css">
+</head>
+
+<body>
+
+<header class="site-header">
+  <div class="site-header__inner">
+    <div class="brand">
+      <div class="brand__logo"></div>
+      <div class="brand__name">TalentConnect</div>
+    </div>
+    <div class="muted">Step <strong>4</strong> of 4</div>
+  </div>
+</header>
+
+<main class="container">
+  <div class="stepper">
+    <div class="stepper__dot stepper__dot--done"></div>
+    <div class="stepper__dot stepper__dot--done"></div>
+    <div class="stepper__dot stepper__dot--done"></div>
+    <div class="stepper__dot stepper__dot--active"></div>
+  </div>
+
+  <section class="card">
+    <h1 class="card__title">Skills & Other Info</h1>
+    <p class="card__note">Add a few skills and languages.</p>
+
+    <form action="../../Backend/userinfo.php" method="POST">
+
+      <input type="hidden" name="type" value="skills">
+
+      <label>Skills</label>
+      <textarea name="skills" rows="3" placeholder="Java, PHP, SQL"></textarea>
+
+      <label>Languages</label>
+      <textarea name="languages" rows="2" placeholder="English, Punjabi"></textarea>
+
+      <label>Phone (optional)</label>
+      <input type="text" name="phone" placeholder="+1 604 555 0000">
+
+      <div class="actions">
+        <input type="submit" class="btn btn--primary" value="Finish →">
+      </div>
+
+    </form>
+
+  </section>
+</main>
+
+<footer class="site-footer">© 2025 TalentConnect</footer>
+
+</body>
+</html>
