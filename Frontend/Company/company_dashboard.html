@@ -1,69 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Employer Dashboard · TalentConnect</title>
-
-  <link rel="stylesheet" href="../css/style.css"/>
+  <meta charset="UTF-8">
+  <title>Company Dashboard • TalentConnect</title>
+  <link rel="stylesheet" href="../css/style.css">
 
   <style>
-/* =============================
-   DASHBOARD STYLING
-============================= */
-body .bg-dot,
-body .bg-shape {
-  display: none !important;
-}
+    body .bg-dot,
+      body .bg-shape {
+        display: none !important;
+      }
 
-body {
-  background: #f3f4f6 !important;
-}
-
-.site-header {
-  background: #fff;
-  border-bottom: 1px solid #e5e7eb;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.04);
-}
-
-.nav a { font-weight: 500; border-radius: 10px; }
-.nav a:hover { background: rgba(124,58,237,0.1); color: var(--purple); }
-
-.kpi-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 16px;
-  margin-bottom: 20px;
-}
-
-.kpi {
-  padding: 20px;
-  border-radius: 14px;
-  color: white;
-  background: linear-gradient(135deg, #7C3AED, #60A5FA);
-  box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-}
-
-.dashboard-section {
-  display: grid;
-  grid-template-columns: 2fr 1fr;
-  gap: 20px;
-}
-
-.card { 
-  background: #fff; 
-  border-radius: 16px; 
-  padding: 20px;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.06);
-}
-
-.table { width: 100%; border-collapse: collapse; }
-.table th { background: #f8fafc; padding: 12px; border-bottom: 1px solid #e5e7eb; }
-.table td { padding: 12px; border-bottom: 1px solid #f1f5f9; }
-
-.pill--ok { background: #dcfce7; color: #166534; padding: 4px 10px; border-radius: 12px; }
-.pill--bad { background: #fee2e2; color: #991b1b; padding: 4px 10px; border-radius: 12px; }
-
+      /* OPTIONAL: Set a clean plain background */
+      body {
+        background: #f8fafc !important;
+      }
+    .dash-card {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    .dash-btn {
+      display:block;
+      margin: 15px 0;
+      padding: 12px;
+      border-radius:8px;
+      background:#2563eb;
+      color:white !important;
+      text-decoration:none;
+      font-weight:600;
+    }
   </style>
 </head>
 
@@ -71,112 +40,28 @@ body {
 
 <header class="site-header">
   <div class="site-header__inner">
-    <a href="company_dashboard.html" class="brand">
-      <span class="brand__logo"></span>
-      <span class="brand__name">TalentConnect</span>
-    </a>
-
-    <nav class="nav">
-      <a class="btn btn--ghost" href="company_dashboard.html">Dashboard</a>
-      <a class="btn btn--ghost" href="post_job.html">Post Job</a>
-      <a class="btn btn--ghost" href="manage_jobs.html">Manage Jobs</a>
-      <a class="btn btn--ghost" href="applicants.html">Applicants</a>
-      <a class="btn btn--ghost" href="company_profile.html">Company Profile</a>
-      <a class="btn" href="company_login.html">Sign Out</a>
+    <div class="brand">
+      <div class="brand__logo"></div>
+      <div class="brand__name">TalentConnect</div>
+    </div>
+    <nav>
+      <a class="btn" href="../../Backend/logout.php">Sign Out</a>
     </nav>
   </div>
 </header>
 
 <main class="container">
+  <h1>Welcome, Company Admin</h1>
 
-  <!-- KPIs -->
-  <div class="kpi-grid">
-    <div class="kpi"><h4>Open Roles</h4><div class="val" id="kpiOpen">0</div></div>
-    <div class="kpi"><h4>Total Applicants</h4><div class="val" id="kpiApplicants">0</div></div>
-    <div class="kpi"><h4>Shortlisted</h4><div class="val" id="kpiShortlisted">0</div></div>
-    <div class="kpi"><h4>New (7 days)</h4><div class="val" id="kpiNewWeek">0</div></div>
-  </div>
+  <div class="dash-card">
 
-  <div class="dashboard-section">
-
-    <!-- Open Roles -->
-    <div class="card">
-      <p class="card__title">Open Roles</p>
-      <table class="table">
-        <thead>
-          <tr><th>Title</th><th>Location</th><th>Type</th><th>Status</th><th>Applicants</th></tr>
-        </thead>
-        <tbody id="rolesBody"></tbody>
-      </table>
-    </div>
-
-    <!-- Recent Applicants -->
-    <div class="card">
-      <p class="card__title">Recent Applicants</p>
-      <ul id="recentList"></ul>
-      <a class="btn btn--primary" href="applicants.html">View All</a>
-    </div>
+      <a href="manage_jobs.html" class="dash-btn">📌 Manage Jobs</a>
+      <a href="company_profile.html" class="dash-btn">🏢 Company Profile</a>
+      <a href="applicants.html" class="dash-btn">🧑‍💼 Applicants</a>
 
   </div>
 </main>
 
-<footer class="site-footer">
-  © 2025 TalentConnect · Employers Portal
-</footer>
-
-<script>
-/* ===============================
-   LOCAL STORAGE HELPERS
-=============================== */
-function getJobs(){ return JSON.parse(localStorage.getItem("tc_jobs")) || []; }
-function getApplicants(){ return JSON.parse(localStorage.getItem("tc_applicants")) || {}; }
-
-/* ===============================
-   RENDER DASHBOARD
-=============================== */
-function renderDashboard(){
-  const jobs = getJobs();
-  const appsMap = getApplicants();
-
-  // KPI: Open roles
-  document.getElementById("kpiOpen").textContent = jobs.filter(j => j.status === "Open").length;
-
-  // KPI: Total applicants
-  let totalApps = 0;
-  Object.values(appsMap).forEach(a => totalApps += a.length);
-  document.getElementById("kpiApplicants").textContent = totalApps;
-
-  // KPI: Shortlisted
-  let shortlisted = 0;
-  Object.values(appsMap).flat().forEach(a => { if(a.status === "SHORTLISTED") shortlisted++; });
-  document.getElementById("kpiShortlisted").textContent = shortlisted;
-
-  // KPI: New last 7 days
-  const weekAgo = Date.now() - 7*24*60*60*1000;
-  let newApps = Object.values(appsMap).flat().filter(a => new Date(a.appliedAt) >= weekAgo).length;
-  document.getElementById("kpiNewWeek").textContent = newApps;
-
-  /* === Open roles table === */
-  let rolesHTML = "";
-  jobs.forEach(j => {
-    rolesHTML += `
-      <tr>
-        <td>${j.title}</td>
-        <td>${j.location}</td>
-        <td>${j.type}</td>
-        <td>${j.status === "Open" ? '<span class="pill--ok">Open</span>' : '<span class="pill--bad">Closed</span>'}</td>
-        <td>${j.applicants ?? 0}</td>
-      </tr>`;
-  });
-  document.getElementById("rolesBody").innerHTML = rolesHTML || "<tr><td colspan='5'>No jobs posted yet.</td></tr>";
-
-  /* === Recent applicants list === */
-  const recentList = document.getElementById("recentList");
-  recentList.innerHTML = "<li>No recent applicants.</li>";
-}
-
-renderDashboard();
-</script>
-
+<footer class="site-footer">© 2025 TalentConnect</footer>
 </body>
 </html>
