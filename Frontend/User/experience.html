@@ -4,9 +4,7 @@
   <meta charset="utf-8" />
   <title>Work Experience • TalentConnect</title>
   <link rel="stylesheet" href="../css/style.css" />
-
   <style>
-/* EXPERIENCE BOX STYLE */
 .exp-box {
   border: 1px solid var(--border);
   padding: 10px 14px;
@@ -14,24 +12,9 @@
   background: #f9fafb;
   margin-bottom: 10px;
 }
-
-.exp-title {
-  font-weight: 700;
-  font-size: 1rem;
-  margin-bottom: 4px;
-}
-
-.exp-dates {
-  font-size: 0.85rem;
-  color: #555;
-}
-
-.exp-delete {
-  color: red;
-  font-size: 0.8rem;
-  cursor: pointer;
-  float: right;
-}
+.exp-title { font-weight:700;font-size:1rem;margin-bottom:4px; }
+.exp-dates { font-size:0.85rem; color:#555; }
+.exp-delete { color:red;font-size:0.8rem;cursor:pointer;float:right; }
   </style>
 </head>
 
@@ -61,10 +44,8 @@
     <h1 class="card__title">Work Experience</h1>
     <p class="card__note">Add at least one job. You can add more.</p>
 
-    <!-- 🔹 SAVED EXPERIENCE GOES HERE -->
     <div id="expList"></div>
 
-    <!-- 🔹 FORM -->
     <form id="expForm" novalidate>
 
       <label>Job Title</label>
@@ -106,10 +87,12 @@
           Save & Add Another
         </button>
 
-        <a id="continueBtn" class="btn btn--primary" href="education.html">
+        <!-- FIXED: REAL SAVE BUTTON -->
+        <button type="button" class="btn btn--primary" id="continueBtn">
           Save & Continue →
-        </a>
+        </button>
       </div>
+
     </form>
 
   </section>
@@ -117,10 +100,8 @@
 
 <footer class="site-footer">© 2025 TalentConnect</footer>
 
-
-<!-- ================== SCRIPT ================== -->
 <script>
-/* ========= STORAGE ========= */
+// ================== STORE IN LOCALSTORAGE ==================
 function getExp() {
   return JSON.parse(localStorage.getItem("tc_experience")) || [];
 }
@@ -128,36 +109,28 @@ function saveExp(list) {
   localStorage.setItem("tc_experience", JSON.stringify(list));
 }
 
-/* ========= RENDER SAVED EXPERIENCE ========= */
 function rebuildList() {
   const box = document.getElementById("expList");
   const list = getExp();
-
   box.innerHTML = "";
-
   list.forEach((e,i) => {
     box.innerHTML += `
       <div class="exp-box">
         <span class="exp-delete" onclick="deleteExp(${i})">✖</span>
         <div class="exp-title">${e.title} – ${e.company}</div>
-        <div class="exp-dates">
-          ${e.start} → ${e.current ? "Present" : e.end}
-        </div>
-      </div>
-    `;
+        <div class="exp-dates">${e.start} → ${e.current ? "Present" : e.end}</div>
+      </div>`;
   });
 }
 
-/* ========= DELETE ========= */
 function deleteExp(i){
-  const list = getExp();
+  let list = getExp();
   list.splice(i,1);
   saveExp(list);
   rebuildList();
 }
 
-/* ========= CREATE ENTRY ========= */
-function collectEntry() {
+function collectEntry(){
   return {
     title: jobTitle.value.trim(),
     company: company.value.trim(),
@@ -165,19 +138,14 @@ function collectEntry() {
     current: current.value === "Yes",
     start: start.value,
     end: end.value,
-    desc: desc.value.trim(),
-    id: Date.now()
+    desc: desc.value.trim()
   };
 }
 
-/* ========= SAVE & ADD ANOTHER ========= */
+// ADD ANOTHER
 document.getElementById("addAnother").addEventListener("click", () => {
   let e = collectEntry();
-
-  if (!e.title || !e.company) {
-    alert("Please enter Job Title & Company");
-    return;
-  }
+  if (!e.title || !e.company) return alert("Enter Job Title & Company");
 
   let list = getExp();
   list.push(e);
@@ -187,17 +155,34 @@ document.getElementById("addAnother").addEventListener("click", () => {
   rebuildList();
 });
 
-/* ========= SAVE & CONTINUE ========= */
-document.getElementById("continueBtn").addEventListener("click", () => {
-  let e = collectEntry();
-  if(e.title && e.company){
-    let L = getExp();
-    L.push(e);
-    saveExp(L);
+// FINAL SUBMIT TO BACKEND
+document.getElementById("continueBtn").addEventListener("click", async () => {
+  let list = getExp();
+  if (list.length === 0) return alert("Add at least one job.");
+
+  try {
+    let res = await fetch("../../Backend/userinfo.php", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        type: "experience",
+        experience: list
+      })
+    });
+
+    let result = await res.json();
+    if (result.success) {
+      localStorage.removeItem("tc_experience");
+      window.location.href = "education.html";
+    } else {
+      alert("❌ " + result.error);
+    }
+  } catch (err) {
+    console.error(err);
+    alert("Server error!");
   }
 });
 
-/* ==== FIRST LOAD ==== */
 rebuildList();
 </script>
 

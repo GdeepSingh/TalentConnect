@@ -99,9 +99,10 @@
           Save & Add Another
         </button>
 
-        <a class="btn btn--primary" id="continueBtn" href="skills.html">
+        <!-- FIXED BUTTON -->
+        <button type="button" class="btn btn--primary" id="saveContinue">
           Save & Continue →
-        </a>
+        </button>
       </div>
 
     </form>
@@ -113,40 +114,34 @@
 
 <!-- =============== SCRIPT =============== -->
 <script>
-/* LOCAL STORAGE HELPERS */
-const getEdu  = () => JSON.parse(localStorage.getItem("tc_education")) || [];
-const saveEdu = (list) => localStorage.setItem("tc_education", JSON.stringify(list));
+/* -------- LOCAL STORAGE -------- */
+function getEdu() { return JSON.parse(localStorage.getItem("tc_education")) || []; }
+function saveEdu(list) { localStorage.setItem("tc_education", JSON.stringify(list)); }
 
-/* REBUILD DISPLAY LIST */
 function rebuildEduList(){
-  const box  = document.getElementById("eduList");
+  const box = document.getElementById("eduList");
   const list = getEdu();
-
   box.innerHTML = "";
 
-  list.forEach((e,i) => {
+  list.forEach((e,i)=> {
     box.innerHTML += `
       <div class="edu-box">
-        <span class="edu-delete" onclick="deleteEdu(${i})">✖</span>
+        <span onclick="deleteEdu(${i})" class="edu-delete">✖</span>
         <div class="edu-title">${e.degree} in ${e.field}</div>
         <div class="edu-dates">${e.school}<br>${e.startYear} → ${e.endYear}</div>
-      </div>
-    `;
+      </div>`;
   });
 }
 
-/* DELETE ENTRY */
 function deleteEdu(i){
-  let list = getEdu();
-  list.splice(i,1);
-  saveEdu(list);
+  let L = getEdu();
+  L.splice(i,1);
+  saveEdu(L);
   rebuildEduList();
 }
 
-/* COLLECT FORM DATA */
 function collectEducation(){
   return {
-    id: Date.now(),
     school: school.value.trim(),
     degree: degree.value.trim(),
     field: field.value.trim(),
@@ -155,32 +150,64 @@ function collectEducation(){
   };
 }
 
-/* SAVE & ADD ANOTHER */
-document.getElementById("addAnother").addEventListener("click", () => {
+/* ----- ADD ANOTHER ----- */
+document.getElementById("addAnother").addEventListener("click", ()=>{
   let e = collectEducation();
   if(!e.school || !e.degree){
-    alert("⚠ School + Degree required");
+    alert("School + Degree required");
     return;
   }
-  let list = getEdu();
-  list.push(e);
-  saveEdu(list);
+  let L = getEdu();
+  L.push(e);
+  saveEdu(L);
 
   document.getElementById("eduForm").reset();
   rebuildEduList();
 });
 
-/* SAVE & CONTINUE */
-document.getElementById("continueBtn").addEventListener("click", () => {
-  let e = collectEducation();
-  if(e.school && e.degree){
-    let list = getEdu();
-    list.push(e);
-    saveEdu(list);
+/* -------- SAVE & CONTINUE -------- */
+document.getElementById("saveContinue").addEventListener("click", async ()=> {
+
+  let last = collectEducation();
+  if(last.school && last.degree){
+    let L = getEdu();
+    L.push(last);
+    saveEdu(L);
+  }
+
+  let eduList = getEdu();
+
+  if(eduList.length === 0){
+    alert("Add at least one education entry");
+    return;
+  }
+
+  try {
+    const response = await fetch("../../Backend/userinfo.php", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        type: "education",
+        education: eduList
+      })
+    });
+
+    const result = await response.json();
+    console.log(result);
+
+    if(result.success){
+      localStorage.removeItem("tc_education");
+      window.location.href = "skills.html";
+    } else {
+      alert("Failed: " + result.error);
+    }
+
+  } catch (err){
+    console.error(err);
+    alert("Failed to save education.");
   }
 });
 
-/* ON LOAD */
 rebuildEduList();
 </script>
 

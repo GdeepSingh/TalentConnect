@@ -135,7 +135,7 @@ if (isset($_POST['login'])) {
             $result = $sql->get_result();
 
             if ($result->num_rows === 0) {
-                echo "<script>alert('No company account found');</script>";
+                echo "<script>alert('No company account found') windoe;</script>";
                 exit;
             }
 
