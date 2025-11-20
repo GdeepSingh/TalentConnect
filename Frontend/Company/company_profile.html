@@ -1,115 +1,217 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Company Profile · TalentConnect</title>
-  <link rel="stylesheet" href="../css/style.css">
-  <style>
-    .container-box {
-      background: #fff;
-      padding: 20px;
-      border-radius: 12px;
-      border: 1px solid #e5e7eb;
-      max-width: 800px;
-      margin: 30px auto;
-    }
-    label {
-      font-weight: 600;
-      font-size: 0.9rem;
-    }
-    input, textarea, select {
-      width: 100%;
-      padding: 9px;
-      border-radius: 8px;
-      border: 1px solid #d1d5db;
-      margin-top: 4px;
-      margin-bottom: 12px;
-      font-size: 0.9rem;
-    }
-    .btn-save {
-      width: 100%;
-      background: var(--primary);
-      padding: 11px;
-      border-radius: 8px;
-      border: none;
-      color: #fff;
-      font-size: 1rem;
-      cursor: pointer;
-    }
-    .flex-row { display:flex; gap:12px; }
-    .flex-row > div { flex:1; }
-  </style>
-</head>
-<body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Company Profile · TalentConnect</title>
+    <link rel="stylesheet" href="../css/style.css" />
+    <style>
+      /* REMOVE ALL BACKGROUND SHAPES ONLY ON THIS PAGE */
+      body .bg-dot,
+      body .bg-shape {
+        display: none !important;
+      }
 
-<header class="site-header">
-  <div class="site-header__inner">
-    <div class="brand">
-      <div class="brand__logo"></div>
-      <span class="brand__name">TalentConnect</span>
-    </div>
+      /* OPTIONAL: Set a clean plain background */
+      body {
+        background: #f8fafc !important;
+      }
+      .profile-banner {
+        width: 100%;
+        height: 180px;
+        background: #e5e7eb;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1rem;
+        overflow: hidden;
+        position: relative;
+      }
+      .profile-banner img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      .profile-logo {
+        width: 120px;
+        height: 120px;
+        border-radius: 8px;
+        background: #f3f4f6;
+        border: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: -60px 0 1rem 1rem;
+        overflow: hidden;
+        position: relative;
+      }
+      .profile-logo img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+      }
+      .profile-card {
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+      .code-card {
+        margin-top: 1rem;
+        padding: 0.75rem 1rem;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        background: #f9fafb;
+      }
+      .code-value {
+        font-size: 1.3rem;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+      }
+    </style>
+  </head>
+  <body>
+    <script defer>
+      // ============================
+      // LOAD COMPANY INFO FROM PHP
+      // ============================
+      fetch("../../Backend/companyProfile.php")
+        .then((res) => res.json())
+        .then((data) => {
+          document.getElementById("cName").value = data.company_name;
+          document.getElementById("cIndustry").value = data.industry;
+          document.getElementById("cLocation").value = data.hq_city;
+          document.getElementById("cAbout").value = data.description;
 
-    <!-- Admin navbar: Dashboard + Company Profile + Sign out -->
-    <nav style="display:flex; gap:12px;">
-      <a class="btn btn--ghost" href="company_dashboard.html">Dashboard</a>
-      <a class="btn btn--ghost" href="company_profile.html">Company Profile</a>
-      <!-- Front-end signout; later you can point this to logout.php -->
-      <a class="btn" href="company_login.html">Sign out</a>
-    </nav>
-  </div>
-</header>
+          if (data.banner) {
+            document.getElementById(
+              "bannerPreview"
+            ).innerHTML = `<img src="../../Backend/${data.banner}" style="width:100%;height:100%;object-fit:cover;">`;
+          }
 
+          if (data.logo) {
+            document.getElementById(
+              "logoPreview"
+            ).innerHTML = `<img src="../../Backend/${data.logo}" style="width:100%;height:100%;object-fit:contain;">`;
+          }
 
-<main class="container">
-  <div class="container-box">
-    <h1>Company Profile</h1>
-    <p class="card__note">Update details about your company.</p>
+          document.getElementById("companyCodeDisplay").textContent =
+            data.company_code ?? "No code yet";
+        })
+        .catch((err) => console.error("Profile load error:", err));
+    </script>
 
-    <form action="../../Backend/update_company_profile.php" method="POST" enctype="multipart/form-data">
-      <label>Company Name</label>
-      <input type="text" name="company_name" placeholder="e.g., TechNova Inc." required>
+    <header class="site-header">
+      <div class="site-header__inner">
+        <a
+          href="company_dashboard.html"
+          class="brand"
+          style="text-decoration: none; color: inherit"
+        >
+          <span class="brand__logo" aria-hidden="true"></span>
+          <span class="brand__name">TalentConnect</span>
+        </a>
+        <nav style="display: flex; gap: 12px">
+          <a class="btn btn--ghost" href="company_dashboard.html">Dashboard</a>
+          <a class="btn btn--ghost" href="manage_jobs.html">Manage Jobs</a>
+          <a class="btn btn--ghost" href="applicants.html">Applicants</a>
+          <a class="btn btn--ghost" href="company_profile.html"
+            >Company Profile</a
+          >
+          <a class="btn" href="login.html">Sign out</a>
+        </nav>
+      </div>
+    </header>
 
-      <div class="flex-row">
-        <div>
-          <label>Website</label>
-          <input type="url" name="website" placeholder="https://yourcompany.com">
+    <main class="container">
+      <div class="card profile-card">
+        <p class="card__title">Company Profile</p>
+        <p class="card__note">
+          Keep your company information up to date for candidates.
+        </p>
+
+        <!-- Preview section -->
+        <div class="profile-banner" id="bannerPreview">
+          <span class="muted">Banner Preview</span>
         </div>
-        <div>
-          <label>Head Office City</label>
-          <input type="text" name="hq_city" placeholder="Vancouver, BC">
+        <div class="profile-logo" id="logoPreview">
+          <span class="muted">Logo</span>
+        </div>
+
+        <form
+          id="companyForm"
+          action="../../Backend/companyProfile.php"
+          method="post"
+          enctype="multipart/form-data"
+        >
+          <label for="banner">Upload Banner</label>
+          <input type="file" id="banner" name="banner" accept="image/*" />
+
+          <label for="logo">Upload Logo</label>
+          <input type="file" id="logo" name="logo" accept="image/*" />
+
+          <div class="row">
+            <div>
+              <label for="cName">Company Name</label>
+              <input
+                type="text"
+                id="cName"
+                name="cName"
+                placeholder="Your Company Inc."
+              />
+            </div>
+            <div>
+              <label for="cIndustry">Industry</label>
+              <input
+                type="text"
+                id="cIndustry"
+                name="cIndustry"
+                placeholder="Software, Retail, Healthcare…"
+              />
+            </div>
+          </div>
+
+          <div class="row">
+            <div>
+              <label for="cLocation">HQ Location</label>
+              <input
+                type="text"
+                id="cLocation"
+                name="cLocation"
+                placeholder="City, Country"
+              />
+            </div>
+          </div>
+
+          <label for="cAbout">About</label>
+          <textarea
+            id="cAbout"
+            name="cAbout"
+            rows="5"
+            placeholder="Describe your mission, values, and products."
+          ></textarea>
+
+          <div class="actions">
+            <a class="btn" href="company_dashboard.html">Cancel</a>
+            <button class="btn btn--primary" type="submit">Save Changes</button>
+          </div>
+        </form>
+
+        <!-- Company code box -->
+        <div class="code-card">
+          <p class="card__title" style="font-size: 16px; margin-bottom: 0.3rem">
+            Company Access Code
+          </p>
+          <p class="card__note">
+            Share this code with colleagues so they can join this company as
+            employers during sign up.
+          </p>
+          <p id="companyCodeDisplay" class="code-value"></p>
         </div>
       </div>
+    </main>
 
-      <div class="flex-row">
-        <div>
-          <label>Company Size</label>
-          <select name="size">
-            <option value="">Select</option>
-            <option value="1-10">1–10</option>
-            <option value="11-50">11–50</option>
-            <option value="51-200">51–200</option>
-            <option value="201-500">201–500</option>
-            <option value="500+">500+</option>
-          </select>
-        </div>
-        <div>
-          <label>Industry</label>
-          <input type="text" name="industry" placeholder="e.g., Software, Healthcare">
-        </div>
-      </div>
-
-      <label>About</label>
-      <textarea name="about" rows="5" placeholder="Write a short description of your company..."></textarea>
-
-      <label>Company Logo (optional)</label>
-      <input type="file" name="logo" accept="image/*">
-
-      <button type="submit" class="btn-save">Save Company Profile</button>
-    </form>
-  </div>
-</main>
-
-<footer class="site-footer">© 2025 TalentConnect</footer>
-
-</body>
+    <footer class="site-footer">
+      <p>© 2025 TalentConnect · Employers Portal</p>
+    </footer>
+  </body>
 </html>
