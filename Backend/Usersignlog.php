@@ -97,7 +97,7 @@ if (isset($_POST['signup'])) {
         $insertCE->bind_param("ii", $uid, $parentCid);
         $insertCE->execute();
 
-        header("Location: ../Frontend/Company/company_dashboard.html");
+        header("Location: ../Frontend/User/login.html");
         exit;
     }
 

@@ -28,15 +28,9 @@ if (isset($_POST['login'])) {
 
     // Store session
     $_SESSION['uid']  = $user['uid'];
-    $_SESSION['role'] = $user['role'];
-    $_SESSION['name'] = $user['fname'] . " " . $user['lname'];
 
     // Redirect based on role
-    if ($user['role'] === "CompanyAdmin") {
-        // ADMIN → dashboard
-        header("Location: ../Frontend/Company/company_dashboard.html");
-        exit;
-    } elseif ($user['role'] === "CompanyEmployee") {
+    if ($user['role'] === "CompanyEmployee") {
         // EMPLOYER → manage jobs directly
         header("Location: ../Frontend/Company/manage_jobs.html");
         exit;

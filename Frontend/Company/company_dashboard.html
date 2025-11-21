@@ -1,140 +1,187 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Company Dashboard · TalentConnect</title>
-  <link rel="stylesheet" href="../css/style.css">
-  <style>
-    .dash-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 14px;
-      margin-bottom: 20px;
-    }
-    .dash-card {
-      background: #fff;
-      border-radius: 12px;
-      border: 1px solid #e5e7eb;
-      padding: 14px 16px;
-    }
-    .dash-label {
-      font-size: 0.85rem;
-      color: #6b7280;
-    }
-    .dash-value {
-      font-size: 1.8rem;
-      font-weight: 700;
-      margin-top: 4px;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.9rem;
-    }
-    th, td {
-      padding: 8px 10px;
-      border-bottom: 1px solid #e5e7eb;
-      text-align: left;
-    }
-    th {
-      background: #f9fafb;
-      font-weight: 600;
-      font-size: 0.85rem;
-      color: #4b5563;
-    }
-    .section-card {
-      background: #fff;
-      border-radius: 12px;
-      border: 1px solid #e5e7eb;
-      padding: 16px 18px;
-      margin-top: 18px;
-    }
-  </style>
-</head>
-<body>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Company Dashboard · TalentConnect</title>
+    <link rel="stylesheet" href="../css/style.css" />
+    <style>
+      .dash-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 14px;
+        margin-bottom: 20px;
+      }
+      .dash-card {
+        background: #fff;
+        border-radius: 12px;
+        border: 1px solid #e5e7eb;
+        padding: 14px 16px;
+      }
+      .dash-label {
+        font-size: 0.85rem;
+        color: #6b7280;
+      }
+      .dash-value {
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin-top: 4px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.9rem;
+      }
+      th,
+      td {
+        padding: 8px 10px;
+        border-bottom: 1px solid #e5e7eb;
+        text-align: left;
+      }
+      th {
+        background: #f9fafb;
+        font-weight: 600;
+        font-size: 0.85rem;
+        color: #4b5563;
+      }
+      .section-card {
+        background: #fff;
+        border-radius: 12px;
+        border: 1px solid #e5e7eb;
+        padding: 16px 18px;
+        margin-top: 18px;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="site-header__inner">
+        <div class="brand">
+          <div class="brand__logo"></div>
+          <span class="brand__name">TalentConnect</span>
+        </div>
 
-<header class="site-header">
-  <div class="site-header__inner">
-    <div class="brand">
-      <div class="brand__logo"></div>
-      <span class="brand__name">TalentConnect</span>
-    </div>
+        <!-- Admin navbar: Dashboard + Company Profile (no sign out here) -->
+        <nav style="display: flex; gap: 12px">
+          <a class="btn btn--ghost" href="company_dashboard.html">Dashboard</a>
+          <a class="btn btn--ghost" href="company_profile.html"
+            >Company Profile</a
+          >
+        </nav>
+      </div>
+    </header>
 
-    <!-- Admin navbar: Dashboard + Company Profile (no sign out here) -->
-    <nav style="display:flex; gap:12px;">
-      <a class="btn btn--ghost" href="company_dashboard.html">Dashboard</a>
-      <a class="btn btn--ghost" href="company_profile.html">Company Profile</a>
-    </nav>
-  </div>
-</header>
+    <main class="container">
+      <h1 class="card__title" style="margin-top: 20px">Company Dashboard</h1>
+      <p class="card__note">Overview of your company activity.</p>
 
+      <!-- METRIC CARDS -->
+      <div class="dash-grid">
+        <div class="dash-card">
+          <div class="dash-label">Employees</div>
+          <div class="dash-value" id="metricEmployees">0</div>
+        </div>
+        <div class="dash-card">
+          <div class="dash-label">Open Jobs</div>
+          <div class="dash-value" id="metricJobs">0</div>
+        </div>
+        <div class="dash-card">
+          <div class="dash-label">Applicants</div>
+          <div class="dash-value" id="metricApplicants">0</div>
+        </div>
+      </div>
 
-<main class="container">
-  <h1 class="card__title" style="margin-top:20px;">Company Dashboard</h1>
-  <p class="card__note">Overview of your company activity.</p>
+      <!-- RECENT JOBS -->
+      <section class="section-card">
+        <h2>Recent Jobs</h2>
+        <table id="jobsTable">
+          <thead>
+            <tr>
+              <th>Job Title</th>
+              <th>Location</th>
+              <th>Type</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Filled by backend/JS later -->
+            <tr>
+              <td colspan="3">No jobs yet.</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
 
-  <!-- METRIC CARDS -->
-  <div class="dash-grid">
-    <div class="dash-card">
-      <div class="dash-label">Employees</div>
-      <div class="dash-value" id="metricEmployees">0</div>
-    </div>
-    <div class="dash-card">
-      <div class="dash-label">Open Jobs</div>
-      <div class="dash-value" id="metricJobs">0</div>
-    </div>
-    <div class="dash-card">
-      <div class="dash-label">Applicants</div>
-      <div class="dash-value" id="metricApplicants">0</div>
-    </div>
-  </div>
+      <!-- LATEST APPLICANTS -->
+      <section class="section-card">
+        <h2>Latest Applicants</h2>
+        <table id="appTable">
+          <thead>
+            <tr>
+              <th>Applicant</th>
+              <th>Job</th>
+              <th>Status</th>
+              <th>Applied On</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td colspan="4">No applicants yet.</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+    </main>
 
-  <!-- RECENT JOBS -->
-  <section class="section-card">
-    <h2>Recent Jobs</h2>
-    <table id="jobsTable">
-      <thead>
-        <tr>
-          <th>Job Title</th>
-          <th>Location</th>
-          <th>Type</th>
-          <th>Posted</th>
-        </tr>
-      </thead>
-      <tbody>
-        <!-- Filled by backend/JS later -->
-        <tr><td colspan="4">No jobs yet.</td></tr>
-      </tbody>
-    </table>
-  </section>
+    <footer class="site-footer">© 2025 TalentConnect</footer>
 
-  <!-- LATEST APPLICANTS -->
-  <section class="section-card">
-    <h2>Latest Applicants</h2>
-    <table id="appTable">
-      <thead>
-        <tr>
-          <th>Applicant</th>
-          <th>Job</th>
-          <th>Status</th>
-          <th>Applied On</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr><td colspan="4">No applicants yet.</td></tr>
-      </tbody>
-    </table>
-  </section>
-</main>
+    <script>
+      // Placeholder: you will replace this with real fetch to backend
+      document.addEventListener("DOMContentLoaded", loadDashboard);
 
-<footer class="site-footer">© 2025 TalentConnect</footer>
+      function loadDashboard() {
+        fetch("../../Backend/company_dashboard.php")
+          .then((res) => res.json())
+          .then((data) => {
+            if (!data.success) return;
 
-<script>
-// Placeholder: you will replace this with real fetch to backend
-document.getElementById("metricEmployees").textContent = "0";
-document.getElementById("metricJobs").textContent       = "0";
-document.getElementById("metricApplicants").textContent = "0";
-</script>
+            // Set metric numbers
+            document.getElementById("metricEmployees").textContent =
+              data.employees;
+            document.getElementById("metricJobs").textContent = data.open_jobs;
+            document.getElementById("metricApplicants").textContent =
+              data.applicants;
 
-</body>
+            // Fill job table
+            const tbody = document.querySelector("#jobsTable tbody");
+            tbody.innerHTML = "";
+
+            if (data.jobs.length === 0) {
+              tbody.innerHTML = `<tr><td colspan="3">No jobs yet.</td></tr>`;
+              return;
+            }
+
+            data.jobs.forEach((job) => {
+              tbody.innerHTML += `
+          <tr>
+            <td>${job.title}</td>
+            <td>${job.location}</td>
+            <td>${formatJobType(job.jobtype)}</td>
+          </tr>
+        `;
+            });
+          });
+      }
+
+      function formatJobType(type) {
+        const map = {
+          full_time: "Full-time",
+          part_time: "Part-time",
+          contract: "Contract",
+          internship: "Internship",
+          temporary: "Temporary",
+        };
+        return map[type] || type;
+      }
+      document.getElementById("metricApplicants").textContent = "0";
+    </script>
+  </body>
 </html>

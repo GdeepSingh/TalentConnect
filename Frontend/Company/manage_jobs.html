@@ -1,155 +1,283 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Manage Jobs · TalentConnect</title>
-  <link rel="stylesheet" href="../css/style.css">
-  <style>
-    .container-box {
-      background: #fff;
-      padding: 20px;
-      border-radius: 12px;
-      border: 1px solid #e5e7eb;
-      max-width: 960px;
-      margin: 30px auto;
-    }
-    .section-card {
-      background: #fff;
-      border-radius: 10px;
-      border: 1px solid #e5e7eb;
-      padding: 16px 18px;
-      margin-top: 18px;
-    }
-    label {
-      font-size: 0.9rem;
-      font-weight: 600;
-    }
-    input, select, textarea {
-      width: 100%;
-      padding: 9px;
-      border-radius: 8px;
-      border: 1px solid #d1d5db;
-      margin-top: 4px;
-      margin-bottom: 10px;
-      font-size: 0.9rem;
-    }
-    .flex-row {
-      display: flex;
-      gap: 12px;
-    }
-    .flex-row > div { flex: 1; }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.9rem;
-    }
-    th, td {
-      padding: 8px 10px;
-      border-bottom: 1px solid #e5e7eb;
-      text-align: left;
-    }
-    th {
-      background: #f9fafb;
-      font-weight: 600;
-      color: #4b5563;
-    }
-  </style>
-</head>
-<body>
-
-<header class="site-header">
-  <div class="site-header__inner">
-    <div class="brand">
-      <div class="brand__logo"></div>
-      <span class="brand__name">TalentConnect</span>
-    </div>
-
-    <!-- Employer navbar: Manage Jobs + Applicants + Company Profile (no sign out) -->
-    <nav style="display:flex; gap:12px;">
-      <a class="btn btn--ghost" href="manage_jobs.html">Manage Jobs</a>
-      <a class="btn btn--ghost" href="applicants.html">Applicants</a>
-      <a class="btn btn--ghost" href="company_profile.html">Company Profile</a>
-    </nav>
-  </div>
-</header>
-
-
-<main class="container">
-  <div class="container-box">
-    <h1>Manage Jobs</h1>
-    <p class="card__note">Post new jobs and manage existing listings.</p>
-
-    <!-- POST JOB FORM -->
-    <section class="section-card">
-      <h2>Post a New Job</h2>
-      <form action="../../Backend/post_job.php" method="POST">
-        <label>Job Title</label>
-        <input type="text" name="title" placeholder="e.g. Frontend Developer" required>
-
-        <div class="flex-row">
-          <div>
-            <label>Location</label>
-            <input type="text" name="location" placeholder="City, Country" required>
-          </div>
-          <div>
-            <label>Job Type</label>
-            <select name="job_type" required>
-              <option value="">Select one</option>
-              <option>Full-time</option>
-              <option>Part-time</option>
-              <option>Contract</option>
-              <option>Internship</option>
-            </select>
-          </div>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Manage Jobs · TalentConnect</title>
+    <link rel="stylesheet" href="../css/style.css" />
+    <style>
+      .container-box {
+        background: #fff;
+        padding: 20px;
+        border-radius: 12px;
+        border: 1px solid #e5e7eb;
+        max-width: 960px;
+        margin: 30px auto;
+      }
+      .section-card {
+        background: #fff;
+        border-radius: 10px;
+        border: 1px solid #e5e7eb;
+        padding: 16px 18px;
+        margin-top: 18px;
+      }
+      label {
+        font-size: 0.9rem;
+        font-weight: 600;
+      }
+      input,
+      select,
+      textarea {
+        width: 100%;
+        padding: 9px;
+        border-radius: 8px;
+        border: 1px solid #d1d5db;
+        margin-top: 4px;
+        margin-bottom: 10px;
+        font-size: 0.9rem;
+      }
+      .flex-row {
+        display: flex;
+        gap: 12px;
+      }
+      .flex-row > div {
+        flex: 1;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.9rem;
+      }
+      th,
+      td {
+        padding: 8px 10px;
+        border-bottom: 1px solid #e5e7eb;
+        text-align: left;
+      }
+      th {
+        background: #f9fafb;
+        font-weight: 600;
+        color: #4b5563;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="site-header__inner">
+        <div class="brand">
+          <div class="brand__logo"></div>
+          <span class="brand__name">TalentConnect</span>
         </div>
 
-        <div class="flex-row">
-          <div>
-            <label>Salary Range (optional)</label>
-            <input type="text" name="salary" placeholder="$25–30/hr or $60,000/year">
-          </div>
-          <div>
-            <label>Application Deadline (optional)</label>
-            <input type="date" name="deadline">
-          </div>
-        </div>
+        <!-- Employer navbar: Manage Jobs + Applicants + Company Profile (no sign out) -->
+        <nav style="display: flex; gap: 12px">
+          <a class="btn btn--ghost" href="manage_jobs.html">Manage Jobs</a>
+          <a class="btn btn--ghost" href="applicants.html">Applicants</a>
+          <form action="../../Backend/user_signout.php" method="post">
+            <input type="submit" name="signout" value="Sign Out" />
+          </form>
+        </nav>
+      </div>
+    </header>
 
-        <label>Job Description</label>
-        <textarea name="description" rows="5"
-          placeholder="Describe responsibilities, requirements, and benefits..."></textarea>
+    <main class="container">
+      <div class="container-box">
+        <h1>Manage Jobs</h1>
+        <p class="card__note">Post new jobs and manage existing listings.</p>
 
-        <div class="actions" style="margin-top:10px;">
-          <button type="submit" class="btn btn--primary">Post Job</button>
-        </div>
-      </form>
-    </section>
+        <!-- POST JOB FORM -->
+        <section class="section-card">
+          <h2>Post a New Job</h2>
+          <form action="../../Backend/post_job.php" method="POST">
+            <label>Job Title</label>
+            <input
+              type="text"
+              name="title"
+              placeholder="e.g. Frontend Developer"
+              required
+            />
 
-    <!-- EXISTING JOBS LIST -->
-    <section class="section-card">
-      <h2>Current Job Listings</h2>
-      <table id="jobsTable">
-        <thead>
-          <tr>
-            <th>Job Title</th>
-            <th>Location</th>
-            <th>Type</th>
-            <th>Posted</th>
-            <th>Status</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <!-- Backend will populate this (PHP or AJAX) -->
-          <tr>
-            <td colspan="6">No jobs posted yet.</td>
-          </tr>
-        </tbody>
-      </table>
-    </section>
-  </div>
-</main>
+            <div class="flex-row">
+              <div>
+                <label>Location</label>
+                <input
+                  type="text"
+                  name="location"
+                  placeholder="City, Country"
+                  required
+                />
+              </div>
+              <div>
+                <label>Job Type</label>
+                <select name="job_type" required>
+                  <option value="">Select one</option>
+                  <option value="full_time">Full-time</option>
+                  <option value="part_time">Part-time</option>
+                  <option value="contract">Contract</option>
+                  <option value="internship">Internship</option>
+                  <option value="temporary">Temporary</option>
+                </select>
+              </div>
+            </div>
 
-<footer class="site-footer">© 2025 TalentConnect</footer>
+            <!-- NEW MIN/MAX SALARY FIELDS -->
+            <div class="flex-row">
+              <div>
+                <label>Minimum Salary</label>
+                <input
+                  type="text"
+                  name="min_salary"
+                  placeholder="e.g. 20 (per hour)"
+                  required
+                />
+              </div>
+              <div>
+                <label>Maximum Salary</label>
+                <input
+                  type="text"
+                  name="max_salary"
+                  placeholder="e.g. 30 (per hour)"
+                  required
+                />
+              </div>
+            </div>
 
-</body>
+            <!-- NEW QUALIFICATION FIELD -->
+            <label>Qualification</label>
+            <input
+              type="text"
+              name="qualification"
+              placeholder="e.g. Bachelor's Degree, Diploma, etc."
+              required
+            />
+
+            <label>Job Description</label>
+            <textarea
+              name="description"
+              rows="5"
+              placeholder="Describe responsibilities, requirements, and benefits..."
+              required
+            ></textarea>
+
+            <div class="actions" style="margin-top: 10px">
+              <input
+                type="submit"
+                class="btn btn--primary"
+                name="post"
+                value="Post Job"
+              />
+            </div>
+          </form>
+        </section>
+
+        <!-- EXISTING JOBS LIST -->
+        <section class="section-card">
+          <h2>Current Job Listings</h2>
+          <table id="jobsTable">
+            <thead>
+              <tr>
+                <th>Job Title</th>
+                <th>Location</th>
+                <th>Type</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Backend will populate this (PHP or AJAX) -->
+              <tr>
+                <td colspan="5">No jobs posted yet.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+      </div>
+    </main>
+
+    <footer class="site-footer">© 2025 TalentConnect</footer>
+
+    <script defer>
+document.addEventListener("DOMContentLoaded", loadJobs);
+
+function loadJobs() {
+  fetch("../../Backend/get_company_jobs.php")
+    .then((res) => res.json())
+    .then((data) => {
+      const tbody = document.querySelector("#jobsTable tbody");
+      tbody.innerHTML = "";
+
+      if (!data.success || data.jobs.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6">No jobs posted yet.</td></tr>`;
+        return;
+      }
+
+      data.jobs.forEach((job) => {
+        const tr = document.createElement("tr");
+
+        tr.innerHTML = `
+          <td>${job.job_title}</td>
+          <td>${job.job_location}</td>
+          <td>${formatJobType(job.job_type)}</td>
+          <td>N/A</td>
+          <td>${job.job_visibility}</td>
+
+          <td>
+              <!-- EDIT -->
+              <button onclick="editJob(${job.job_id})" class="btn btn--ghost">
+                Edit
+              </button>
+
+              <!-- DELETE -->
+              <button onclick="deleteJob(${job.job_id})" class="btn btn--ghost" style="color:red;">
+                Delete
+              </button>
+          </td>
+        `;
+
+        tbody.appendChild(tr);
+      });
+    })
+    .catch((err) => console.error("Error loading jobs:", err));
+}
+
+function formatJobType(type) {
+  const map = {
+    full_time: "Full-time",
+    part_time: "Part-time",
+    contract: "Contract",
+    internship: "Internship",
+    temporary: "Temporary",
+  };
+  return map[type] || type;
+}
+
+/* =========================
+     EDIT JOB
+   ========================= */
+function editJob(id) {
+  window.location.href = `edit_job.html?job=${id}`;
+}
+
+/* =========================
+     DELETE JOB
+   ========================= */
+function deleteJob(jobId) {
+  if (!confirm("Delete this job permanently?")) return;
+
+  fetch("../../Backend/delete_job.php", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ job_id: jobId }),
+  })
+    .then((r) => r.json())
+    .then((d) => {
+      if (d.success) {
+        loadJobs();  // refresh table
+      } else {
+        alert("Delete failed.");
+      }
+    });
+}
+</script>
+
+  </body>
 </html>

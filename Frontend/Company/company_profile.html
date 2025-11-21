@@ -112,12 +112,11 @@
         </a>
         <nav style="display: flex; gap: 12px">
           <a class="btn btn--ghost" href="company_dashboard.html">Dashboard</a>
-          <a class="btn btn--ghost" href="manage_jobs.html">Manage Jobs</a>
-          <a class="btn btn--ghost" href="applicants.html">Applicants</a>
           <a class="btn btn--ghost" href="company_profile.html"
-            >Company Profile</a
-          >
-          <a class="btn" href="login.html">Sign out</a>
+            >Company Profile</a>
+          <form action="../../Backend/companySignOut.php" method="post">
+            <input type="submit" name="signout" value="Sign Out">
+          </form>
         </nav>
       </div>
     </header>
