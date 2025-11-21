@@ -30,9 +30,8 @@
     <h1 class="card__title">Skills & Other Info</h1>
     <p class="card__note">Add a few skills and languages.</p>
 
-    <form action="../../Backend/userinfo.php" method="POST">
-
-      <input type="hidden" name="type" value="skills">
+    <!-- Remove action/method because we will use JS to submit -->
+    <form id="skillsForm">
 
       <label>Skills</label>
       <textarea name="skills" rows="3" placeholder="Java, PHP, SQL"></textarea>
@@ -44,7 +43,7 @@
       <input type="text" name="phone" placeholder="+1 604 555 0000">
 
       <div class="actions">
-        <input type="submit" class="btn btn--primary" value="Finish →">
+        <input type="button" class="btn btn--primary" id="finishBtn" value="Finish →">
       </div>
 
     </form>
@@ -53,6 +52,40 @@
 </main>
 
 <footer class="site-footer">© 2025 TalentConnect</footer>
+
+<script>
+// ------------------ SKILLS SUBMISSION ------------------
+
+document.getElementById("finishBtn").addEventListener("click", async () => {
+
+    const form = new FormData();
+    form.append("type", "skills_form");
+    form.append("skills", document.querySelector("[name='skills']").value);
+    form.append("languages", document.querySelector("[name='languages']").value);
+    form.append("phone", document.querySelector("[name='phone']").value);
+
+    try {
+        const res = await fetch("../../Backend/userinfo.php", {
+            method: "POST",
+            body: form
+        });
+
+        const data = await res.json();
+
+        if (data.success) {
+            // REDIRECT TO USER PROFILE
+            window.location.href = "../User/user_profile.html";
+        } else {
+            alert("Error: " + data.error);
+        }
+
+    } catch (err) {
+        alert("Server error. Try again.");
+        console.error(err);
+    }
+
+});
+</script>
 
 </body>
 </html>
