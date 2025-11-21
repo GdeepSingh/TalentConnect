@@ -54,45 +54,45 @@
 <footer class="site-footer">© 2025 TalentConnect</footer>
 
 <script>
-const jobs = JSON.parse(localStorage.getItem("tc_jobs") || "[]");
-const appliedMap = JSON.parse(localStorage.getItem("tc_applicants") || "{}");
-const user   = JSON.parse(localStorage.getItem("tc_active_user") || "{}");
-const jobList = document.getElementById("jobList");
+document.addEventListener("DOMContentLoaded", loadJobs);
 
-if(jobs.length === 0){
-  jobList.innerHTML = `<p class="muted">No jobs posted yet.</p>`;
-} else {
-  jobList.innerHTML = jobs.map(j => {
-    const applied = (appliedMap[j.id] || [])
-      .some(a => a.userEmail === user.email);
+function loadJobs(){
 
-    return `
-      <div class="job-card">
-        <h2>${j.title}</h2>
-        <p class="muted">${j.location} · ${j.type}</p>
+  fetch("../../Backend/user_dashboard.php")
+    .then(res => res.json())
+    .then(data => {
 
-        <button class="btn"
-          onclick="applyJob('${j.id}')"
-          ${applied ? "disabled" : ""}>
-          ${applied ? "✔ Applied" : "Apply"}
-        </button>
-      </div>
-    `;
-  }).join("");
+      const jobList = document.getElementById("jobList");
+      jobList.innerHTML = "";
+
+      if(!data.success || data.jobs.length === 0){
+        jobList.innerHTML = `<p class="muted">No jobs posted yet.</p>`;
+        return;
+      }
+
+      jobList.innerHTML = data.jobs.map(job => `
+        <div class="job-card" onclick="openJob(${job.pid})" style="cursor:pointer;">
+          <h2>${job.title}</h2>
+          <p class="muted">${job.location} · ${formatJobType(job.jobtype)}</p>
+        </div>
+      `).join("");
+
+    });
 }
 
-function applyJob(jobId){
-  const apps = JSON.parse(localStorage.getItem("tc_applicants") || "{}");
+function openJob(id){
+  window.location.href = "job_view.html?job=" + id;
+}
 
-  if(!apps[jobId]) apps[jobId] = [];
-  apps[jobId].push({
-    userEmail: user.email,
-    name: user.name,
-    appliedAt: new Date().toISOString()
-  });
-
-  localStorage.setItem("tc_applicants", JSON.stringify(apps));
-  location.reload();
+function formatJobType(type){
+  const map={
+    full_time:"Full-time",
+    part_time:"Part-time",
+    contract:"Contract",
+    internship:"Internship",
+    temporary:"Temporary"
+  };
+  return map[type] || type;
 }
 </script>
 

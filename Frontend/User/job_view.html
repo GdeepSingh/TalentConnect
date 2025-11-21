@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Job Details · TalentConnect</title>
+<link rel="stylesheet" href="../css/style.css">
+<style>
+.job-box{
+  background:white;
+  border:1px solid var(--border);
+  padding:20px;
+  border-radius:12px;
+}
+</style>
+</head>
+
+<body>
+
+<header class="site-header">
+  <div class="site-header__inner">
+    <div class="brand">
+      <div class="brand__logo"></div>
+      <span class="brand__name">TalentConnect</span>
+    </div>
+    <nav style="display:flex;gap:12px;">
+      <a class="btn btn--ghost" href="user_dashboard.html">Dashboard</a>
+      <a class="btn btn--ghost" href="job_application.html">My Applications</a>
+      <a class="btn btn--ghost" href="user_profile.html">Profile</a>
+      <form action="../../Backend/user_signout.php" method="post">
+        <input type="submit" class="btn" value="Sign out">
+      </form>
+    </nav>
+  </div>
+</header>
+
+<main class="container">
+  <div class="job-box" id="jobBox">Loading...</div>
+</main>
+
+<footer class="site-footer">© 2025 TalentConnect</footer>
+
+<script>
+const params = new URLSearchParams(window.location.search);
+const jobId = params.get("job");
+
+document.addEventListener("DOMContentLoaded", loadJob);
+
+function loadJob(){
+
+  fetch("../../Backend/get_job.php?job=" + jobId)
+    .then(r=>r.json())
+    .then(data=>{
+      if(!data.success){
+        document.getElementById("jobBox").innerHTML="Job not found.";
+        return;
+      }
+
+      const j = data.job;
+
+      document.getElementById("jobBox").innerHTML = `
+        <h1>${j.title}</h1>
+        <p class="muted">${j.location} · ${formatJobType(j.jobtype)}</p>
+
+        <p><b>Salary:</b> $${j.min_salary} – $${j.max_salary}</p>
+        <p><b>Qualification:</b> ${j.qualification}</p>
+        <p style="white-space:pre-line;">${j.description}</p>
+
+        <button class="btn btn--primary" style="margin-top:16px;"
+                onclick="applyNow(${j.pid})">
+          Apply Now
+        </button>
+      `;
+    });
+}
+
+function formatJobType(type){
+  const map={
+    full_time:"Full-time",
+    part_time:"Part-time",
+    contract:"Contract",
+    internship:"Internship",
+    temporary:"Temporary"
+  };
+  return map[type] || type;
+}
+
+function applyNow(jobId){
+
+  fetch("../../Backend/check_profile_ready.php")
+    .then(r=>r.json())
+    .then(d=>{
+
+      if(!d.success){
+        alert("Error checking profile.");
+        return;
+      }
+
+      if(!d.ready){
+        alert("❗ Complete your profile before applying.\n\nUpload your resume OR add Work Experience, Education, and Skills.");
+        return;
+      }
+
+      // user is allowed → redirect to apply page
+      window.location.href = "apply_job.php?job=" + jobId;
+
+    });
+
+}
+</script>
+
+</body>
+</html>
