@@ -13,6 +13,13 @@
       max-width: 960px;
       margin: 30px auto;
     }
+    .section-card {
+      background: #fff;
+      border-radius: 10px;
+      border: 1px solid #e5e7eb;
+      padding: 16px 18px;
+      margin-top: 18px;
+    }
     table {
       width: 100%;
       border-collapse: collapse;
@@ -30,8 +37,9 @@
     }
     .filter-row {
       display: flex;
-      gap: 10px;
+      justify-content: flex-end;
       margin-bottom: 12px;
+      gap: 10px;
     }
     .filter-row select {
       padding: 8px;
@@ -39,6 +47,26 @@
       border: 1px solid #d1d5db;
       font-size: 0.9rem;
     }
+    .job-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 8px;
+    }
+    .job-meta {
+      font-size: 0.85rem;
+      color: #6b7280;
+    }
+    .status-badge {
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      text-transform: capitalize;
+    }
+    .status-progress { background:#e0f2fe; color:#0369a1; }
+    .status-accepted { background:#dcfce7; color:#15803d; }
+    .status-waitlist { background:#fef9c3; color:#854d0e; }
+    .status-rejected { background:#fee2e2; color:#b91c1c; }
   </style>
 </head>
 <body>
@@ -50,57 +78,217 @@
       <span class="brand__name">TalentConnect</span>
     </div>
 
-    <!-- Employer navbar (Applicants marked active by position / styling if you want) -->
+    <!-- Employer navbar -->
     <nav style="display:flex; gap:12px;">
       <a class="btn btn--ghost" href="manage_jobs.html">Manage Jobs</a>
       <a class="btn btn--ghost" href="applicants.html">Applicants</a>
+      <form action="../../Backend/user_signout.php" method="post">
+        <input type="submit" class="btn" name="signout" value="Sign Out">
+      </form>
     </nav>
   </div>
 </header>
-
 
 <main class="container">
   <div class="container-box">
     <h1>Applicants</h1>
     <p class="card__note">View and manage people who applied to your jobs.</p>
 
+    <!-- Only STATUS filter -->
     <div class="filter-row">
-      <select id="filterJob">
-        <option value="">All Jobs</option>
-        <!-- You’ll fill options via backend -->
-      </select>
       <select id="filterStatus">
         <option value="">All Statuses</option>
-        <option value="New">New</option>
-        <option value="Shortlisted">Shortlisted</option>
-        <option value="Interview">Interview</option>
-        <option value="Hired">Hired</option>
-        <option value="Rejected">Rejected</option>
+        <option value="progress">In Progress</option>
+        <option value="accepted">Accepted</option>
+        <option value="waitlist">Waitlisted</option>
+        <option value="rejected">Rejected</option>
       </select>
     </div>
 
-    <table id="appTable">
-      <thead>
-        <tr>
-          <th>Applicant</th>
-          <th>Job</th>
-          <th>Status</th>
-          <th>Applied On</th>
-          <th>Resume</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <!-- Fill with backend -->
-        <tr>
-          <td colspan="6">No applicants yet.</td>
-        </tr>
-      </tbody>
-    </table>
+    <!-- Jobs + applicants will be rendered here -->
+    <div id="jobsWrapper">
+      <p class="card__note">Loading...</p>
+    </div>
   </div>
 </main>
 
 <footer class="site-footer">© 2025 TalentConnect</footer>
+
+<script>
+let ALL_JOBS = [];
+
+document.addEventListener("DOMContentLoaded", () => {
+  loadApplicants();
+  document.getElementById("filterStatus").addEventListener("change", renderJobs);
+});
+
+function loadApplicants() {
+  fetch("../../Backend/get_applicants.php")
+    .then(res => res.json())
+    .then(data => {
+      const wrapper = document.getElementById("jobsWrapper");
+
+      if (!data.success) {
+        wrapper.innerHTML = `<p class="card__note">Error: ${data.error || "Could not load applicants."}</p>`;
+        return;
+      }
+
+      ALL_JOBS = data.jobs || [];
+      renderJobs();
+    })
+    .catch(err => {
+      console.error(err);
+      document.getElementById("jobsWrapper").innerHTML =
+        "<p class='card__note'>Server error loading applicants.</p>";
+    });
+}
+
+function renderJobs() {
+  const wrapper = document.getElementById("jobsWrapper");
+  const statusFilter = document.getElementById("filterStatus").value;
+
+  if (!ALL_JOBS.length) {
+    wrapper.innerHTML = `<p class="card__note">No jobs or applicants yet.</p>`;
+    return;
+  }
+
+  let html = "";
+
+  ALL_JOBS.forEach(job => {
+    // Filter applicants by status
+    const applicants = (job.applicants || []).filter(a => {
+      if (!statusFilter) return true;
+      return a.status === statusFilter;
+    });
+
+    html += `
+      <section class="section-card">
+        <div class="job-header">
+          <div>
+            <h2 style="margin:0;">${job.title}</h2>
+            <div class="job-meta">
+              ${job.location} · ${formatJobType(job.jobtype)}
+            </div>
+          </div>
+          <div class="job-meta">
+            Applicants: ${applicants.length}
+          </div>
+        </div>
+    `;
+
+    if (applicants.length === 0) {
+      html += `<p class="card__note">No applicants for this job${statusFilter ? " with this status." : "."}</p>`;
+    } else {
+      html += `
+        <table>
+          <thead>
+            <tr>
+              <th>Applicant</th>
+              <th>Email</th>
+              <th>Status</th>
+              <th>Applied On</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+
+      applicants.forEach(a => {
+        html += `
+          <tr>
+            <td>${escapeHtml(a.full_name)}</td>
+            <td>${escapeHtml(a.email)}</td>
+            <td>
+              <span class="status-badge status-${a.status}">
+                ${prettyStatus(a.status)}
+              </span>
+            </td>
+            <td>${a.applied_at || "-"}</td>
+            <td>
+              <button class="btn btn--ghost" onclick="viewApplicant(${a.jaid})">
+                View Profile
+              </button>
+
+              <select onchange="changeStatus(${a.jaid}, this.value)" style="margin-left:6px;">
+                <option value="progress" ${a.status === "progress" ? "selected" : ""}>In Progress</option>
+                <option value="accepted" ${a.status === "accepted" ? "selected" : ""}>Accepted</option>
+                <option value="waitlist" ${a.status === "waitlist" ? "selected" : ""}>Waitlisted</option>
+                <option value="rejected" ${a.status === "rejected" ? "selected" : ""}>Rejected</option>
+              </select>
+            </td>
+          </tr>
+        `;
+      });
+
+      html += `
+          </tbody>
+        </table>
+      `;
+    }
+
+    html += `</section>`;
+  });
+
+  wrapper.innerHTML = html;
+}
+
+function viewApplicant(jaid) {
+  window.location.href = `applicant_view.html?jaid=${jaid}`;
+}
+
+function changeStatus(jaid, value) {
+  fetch("../../Backend/update_application_status.php", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ jaid: jaid, status: value })
+  })
+  .then(r => r.json())
+  .then(d => {
+    if (!d.success) {
+      alert("Failed to update status: " + (d.error || ""));
+      loadApplicants(); // refresh in case of mismatch
+    } else {
+      // also update local ALL_JOBS (optional)
+      ALL_JOBS.forEach(j => {
+        (j.applicants || []).forEach(a => {
+          if (a.jaid == jaid) a.status = value;
+        });
+      });
+      renderJobs();
+    }
+  })
+  .catch(e => {
+    console.error(e);
+    alert("Server error updating status.");
+  });
+}
+
+function formatJobType(type) {
+  const map = {
+    full_time: "Full-time",
+    part_time: "Part-time",
+    contract: "Contract",
+    internship: "Internship",
+    temporary: "Temporary"
+  };
+  return map[type] || type;
+}
+
+function prettyStatus(s) {
+  if (s === "progress") return "In Progress";
+  if (s === "waitlist") return "Waitlisted";
+  return s.charAt(0).toUpperCase() + s.slice(1);
+}
+
+function escapeHtml(str) {
+  return String(str || "")
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#039;");
+}
+</script>
 
 </body>
 </html>

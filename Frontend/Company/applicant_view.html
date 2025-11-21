@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Applicant Profile · TalentConnect</title>
+    <link rel="stylesheet" href="../css/style.css" />
+    <style>
+      .profile-card {
+        background: #fff;
+        border-radius: 12px;
+        border: 1px solid #e5e7eb;
+        padding: 20px;
+        max-width: 900px;
+        margin: 30px auto;
+      }
+      .profile-header {
+        display: flex;
+        gap: 16px;
+        align-items: flex-start;
+        border-bottom: 1px solid #e5e7eb;
+        padding-bottom: 12px;
+        margin-bottom: 16px;
+      }
+      .profile-photo {
+        width: 100px;
+        height: 100px;
+        border-radius: 999px;
+        object-fit: cover;
+        border: 1px solid #e5e7eb;
+      }
+      .section-card {
+        margin-top: 14px;
+        padding-top: 10px;
+        border-top: 1px solid #e5e7eb;
+      }
+      .muted {
+        color: #6b7280;
+        font-size: 0.9rem;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="site-header__inner">
+        <div class="brand">
+          <div class="brand__logo"></div>
+          <span class="brand__name">TalentConnect</span>
+        </div>
+        <nav style="display: flex; gap: 12px">
+          <a class="btn btn--ghost" href="manage_jobs.html">Manage Jobs</a>
+          <a class="btn btn--ghost" href="applicants.html">Applicants</a>
+          <form action="../../Backend/user_signout.php" method="post">
+            <input type="submit" class="btn" name="signout" value="Sign Out" />
+          </form>
+        </nav>
+      </div>
+    </header>
+
+    <main class="container">
+      <div id="profileBox" class="profile-card">Loading applicant...</div>
+    </main>
+
+    <footer class="site-footer">© 2025 TalentConnect</footer>
+
+    <script>
+      const params = new URLSearchParams(window.location.search);
+      const jaid = params.get("jaid");
+
+      document.addEventListener("DOMContentLoaded", loadApplicant);
+
+      function loadApplicant() {
+        if (!jaid) {
+          document.getElementById("profileBox").innerHTML =
+            "Application not specified.";
+          return;
+        }
+
+        fetch(
+          "../../Backend/get_applicant_profile.php?jaid=" +
+            encodeURIComponent(jaid)
+        )
+          .then((r) => r.json())
+          .then((data) => {
+            const box = document.getElementById("profileBox");
+
+            if (!data.success) {
+              box.innerHTML = "Could not load applicant: " + (data.error || "");
+              return;
+            }
+
+            const u = data.user;
+            const job = data.job;
+            const app = data.application;
+            const exp = data.experience || [];
+            const edu = data.education || [];
+            const skills = data.skills;
+
+            let expHtml = "<p class='muted'>No work experience.</p>";
+            if (exp.length) {
+              expHtml = exp
+                .map(
+                  (e) => `
+          <div style="margin-bottom:8px;">
+            <b>${e.job_title}</b> @ ${e.company_name || ""}<br>
+            <span class="muted">
+              ${e.start_date || ""} &rarr; ${e.end_date || "Present"}
+              ${e.location ? " · " + e.location : ""}
+            </span><br>
+            ${
+              e.description ? `<span class="muted">${e.description}</span>` : ""
+            }
+          </div>
+        `
+                )
+                .join("");
+            }
+
+            let eduHtml = "<p class='muted'>No education records.</p>";
+            if (edu.length) {
+              eduHtml = edu
+                .map(
+                  (ed) => `
+          <div style="margin-bottom:8px;">
+            <b>${ed.degree}</b> in ${ed.field_of_study}<br>
+            <span class="muted">
+              ${ed.school_name}
+              ${
+                ed.start_date || ed.end_date
+                  ? " · " + (ed.start_date || "") + " – " + (ed.end_date || "")
+                  : ""
+              }
+            </span>
+          </div>
+        `
+                )
+                .join("");
+            }
+
+            let skillsHtml = "<p class='muted'>No skills saved.</p>";
+            if (skills) {
+              skillsHtml = `
+          <p><b>Skills:</b> ${skills.skill_name || "-"}</p>
+          <p><b>Languages:</b> ${skills.languages || "-"}</p>
+        `;
+            }
+
+            box.innerHTML = `
+        <div class="profile-header">
+          <div>
+            ${
+              u.photo_url
+                ? `<img src="${absolute(
+                    u.photo_url
+                  )}" class="profile-photo" alt="Photo">`
+                : `<div class="profile-photo">?</div>`
+            }
+
+${
+  u.resume_url
+    ? `<p><a href="${absolute(
+        u.resume_url
+      )}" class="btn btn--ghost" target="_blank">Download Resume</a></p>`
+    : `<p class="muted">No resume uploaded.</p>`
+}
+
+          </div>
+          <div>
+            <h2 style="margin:0;">${u.fname} ${u.lname}</h2>
+            <p class="muted">
+              ${job.title} · ${job.location} · ${formatJobType(job.jobtype)}
+            </p>
+            <p style="margin:4px 0 0;">
+              <b>Email:</b> ${u.email}<br>
+              <b>Phone:</b> ${u.phone_number || "-"}<br>
+              <b>Age:</b> ${u.age || "-"}<br>
+              <b>Gender:</b> ${u.gender || "-"}<br>
+              <b>Application Status:</b> ${app.status} <br>
+              ${app.applied_at ? `<b>Applied On:</b> ${app.applied_at}` : ""}
+            </p>
+          </div>
+        </div>
+
+        <div class="section-card">
+          <h3>Work Experience</h3>
+          ${expHtml}
+        </div>
+
+        <div class="section-card">
+          <h3>Education</h3>
+          ${eduHtml}
+        </div>
+
+        <div class="section-card">
+          <h3>Skills & Languages</h3>
+          ${skillsHtml}
+        </div>
+      `;
+          })
+          .catch((err) => {
+            console.error(err);
+            document.getElementById("profileBox").innerHTML =
+              "Server error loading applicant.";
+          });
+      }
+
+      function formatJobType(type) {
+        const map = {
+          full_time: "Full-time",
+          part_time: "Part-time",
+          contract: "Contract",
+          internship: "Internship",
+          temporary: "Temporary",
+        };
+        return map[type] || type;
+      }
+
+      function absolute(path) {
+        if (!path) return "";
+        return path.replace("../", "/TalentConnect/");
+      }
+    </script>
+  </body>
+</html>
