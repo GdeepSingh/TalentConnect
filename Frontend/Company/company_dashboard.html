@@ -135,54 +135,85 @@
     <footer class="site-footer">© 2025 TalentConnect</footer>
 
     <script>
-      // Placeholder: you will replace this with real fetch to backend
-      document.addEventListener("DOMContentLoaded", loadDashboard);
+document.addEventListener("DOMContentLoaded", loadDashboard);
 
-      function loadDashboard() {
-        fetch("../../Backend/company_dashboard.php")
-          .then((res) => res.json())
-          .then((data) => {
-            if (!data.success) return;
+function loadDashboard() {
 
-            // Set metric numbers
-            document.getElementById("metricEmployees").textContent =
-              data.employees;
-            document.getElementById("metricJobs").textContent = data.open_jobs;
-            document.getElementById("metricApplicants").textContent =
-              data.applicants;
+  fetch("../../Backend/company_dashboard.php")
+    .then(res => res.json())
+    .then(data => {
+      if (!data.success) return;
 
-            // Fill job table
-            const tbody = document.querySelector("#jobsTable tbody");
-            tbody.innerHTML = "";
+      // Update metrics
+      document.getElementById("metricEmployees").textContent = data.employees;
+      document.getElementById("metricJobs").textContent = data.open_jobs;
+      document.getElementById("metricApplicants").textContent = data.applicants;
 
-            if (data.jobs.length === 0) {
-              tbody.innerHTML = `<tr><td colspan="3">No jobs yet.</td></tr>`;
-              return;
-            }
+      /* -----------------------
+         RECENT JOBS TABLE
+      ------------------------*/
+      const tbodyJobs = document.querySelector("#jobsTable tbody");
+      tbodyJobs.innerHTML = "";
 
-            data.jobs.forEach((job) => {
-              tbody.innerHTML += `
-          <tr>
-            <td>${job.title}</td>
-            <td>${job.location}</td>
-            <td>${formatJobType(job.jobtype)}</td>
-          </tr>
-        `;
-            });
-          });
+      if (data.jobs.length === 0) {
+        tbodyJobs.innerHTML = `<tr><td colspan="3">No jobs yet.</td></tr>`;
+      } else {
+        data.jobs.forEach(job => {
+          tbodyJobs.innerHTML += `
+            <tr>
+              <td>${job.title}</td>
+              <td>${job.location}</td>
+              <td>${formatJobType(job.jobtype)}</td>
+            </tr>
+          `;
+        });
       }
 
-      function formatJobType(type) {
-        const map = {
-          full_time: "Full-time",
-          part_time: "Part-time",
-          contract: "Contract",
-          internship: "Internship",
-          temporary: "Temporary",
-        };
-        return map[type] || type;
+      /* -----------------------
+         LATEST APPLICANTS TABLE
+      ------------------------*/
+      const tbodyApp = document.querySelector("#appTable tbody");
+      tbodyApp.innerHTML = "";
+
+      if (data.latest_applicants.length === 0) {
+        tbodyApp.innerHTML = `<tr><td colspan="4">No applicants yet.</td></tr>`;
+      } else {
+        data.latest_applicants.forEach(app => {
+
+          tbodyApp.innerHTML += `
+            <tr>
+              <td>${app.fname} ${app.lname}</td>
+              <td>${app.title}</td>
+              <td>${formatStatus(app.status)}</td>
+              <td>${app.applied_at}</td>
+            </tr>
+          `;
+        });
       }
-      document.getElementById("metricApplicants").textContent = "0";
-    </script>
+
+    });
+}
+
+function formatJobType(t){
+  const map = {
+    full_time:"Full-time",
+    part_time:"Part-time",
+    contract:"Contract",
+    internship:"Internship",
+    temporary:"Temporary"
+  };
+  return map[t] || t;
+}
+
+function formatStatus(s){
+  const map = {
+    accepted: "<span class='status accepted'>Accepted</span>",
+    waitlist: "<span class='status pending'>Waitlist</span>",
+    progress: "<span class='status pending'>In Progress</span>",
+    rejected: "<span class='status rejected'>Rejected</span>"
+  };
+  return map[s] || s;
+}
+</script>
   </body>
 </html>
