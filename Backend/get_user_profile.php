@@ -31,7 +31,7 @@ try {
 
     // Build URLs for frontend (user_profile.html is in Frontend/User)
     $photoFile = $user['photo'] ?: 'user_dummy.png';
-    $user['photo_url'] = "../Uploads/" . $photoFile;
+    $user['photo_url'] = "../../Uploads/" . $photoFile;
 
     if (!empty($user['resume'])) {
         $user['resume_url'] = "../Uploads/" . $user['resume'];

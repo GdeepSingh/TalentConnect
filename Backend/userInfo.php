@@ -37,7 +37,7 @@ if (isset($_POST['type']) && $_POST['type'] === "skills_form") {
     $languages = safe($_POST["languages"] ?? null);
     $phone     = safe($_POST["phone"] ?? null);
 
-    // Insert skills only if something was entered
+    // Insert new skills row
     if ($skills !== null || $languages !== null) {
         $stmt = $conn->prepare("
             INSERT INTO skills (user_id, skill_name, languages)
@@ -59,6 +59,7 @@ if (isset($_POST['type']) && $_POST['type'] === "skills_form") {
     echo json_encode(["success" => true]);
     exit;
 }
+
 
 // ----------------------------------------------------------
 // HANDLE JSON REQUESTS FOR EXPERIENCE & EDUCATION

@@ -44,6 +44,46 @@ $stmt->bind_param("ssisssi",
 $stmt->execute();
 
 /* FILE UPLOAD CODE SAME AS BEFORE ... */
+/* ---------- FILE UPLOADS (resume + photo) ---------- */
+
+// Directory: Backend/../Uploads/  (same folder used in get_user_profile.php)
+$uploadDir = __DIR__ . "/../Uploads/";
+if (!is_dir($uploadDir)) {
+    mkdir($uploadDir, 0777, true);
+}
+
+/* Resume upload (PDF) */
+if (!empty($_FILES['resume']['name']) && $_FILES['resume']['error'] === UPLOAD_ERR_OK) {
+    $ext = strtolower(pathinfo($_FILES['resume']['name'], PATHINFO_EXTENSION));
+    if ($ext === 'pdf') {
+        $newName = "resume_{$uid}_" . time() . ".pdf";
+        $target  = $uploadDir . $newName;
+
+        if (move_uploaded_file($_FILES['resume']['tmp_name'], $target)) {
+            $stmtR = $conn->prepare("UPDATE users SET resume = ? WHERE uid = ?");
+            $stmtR->bind_param("si", $newName, $uid);
+            $stmtR->execute();
+        }
+    }
+}
+
+/* Profile photo upload (image) */
+if (!empty($_FILES['photo']['name']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
+    $ext = strtolower(pathinfo($_FILES['photo']['name'], PATHINFO_EXTENSION));
+    $allowed = ['jpg','jpeg','png','gif','webp'];
+
+    if (in_array($ext, $allowed)) {
+        $newName = "photo_{$uid}_" . time() . "." . $ext;
+        $target  = $uploadDir . $newName;
+
+        if (move_uploaded_file($_FILES['photo']['tmp_name'], $target)) {
+            $stmtP = $conn->prepare("UPDATE users SET photo = ? WHERE uid = ?");
+            $stmtP->bind_param("si", $newName, $uid);
+            $stmtP->execute();
+        }
+    }
+}
+
 
 echo "<script>alert('Profile Updated!'); window.location.href='../Frontend/User/user_profile.html';</script>";
 exit;
