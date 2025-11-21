@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>My Applications · TalentConnect</title>
+  <link rel="stylesheet" href="../css/style.css">
+
+  <style>
+    
+      body .bg-dot,
+      body .bg-shape {
+        display: none !important;
+      }
+
+      /* OPTIONAL: Set a clean plain background */
+      body {
+        background: #f8fafc !important;
+      }
+    .container-box {
+      background: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      border: 1px solid #e5e7eb;
+      max-width: 960px;
+      margin: 30px auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+
+    th, td {
+      padding: 10px;
+      border-bottom: 1px solid #e5e7eb;
+      text-align: left;
+    }
+
+    th {
+      background: #f9fafb;
+      font-weight: 600;
+      color: #4b5563;
+    }
+
+    .status {
+      font-weight: bold;
+      text-transform: capitalize;
+    }
+
+    .status.accepted { color: green; }
+    .status.pending { color: orange; }
+    .status.rejected { color: red; }
+  </style>
+</head>
+
+<body>
+
+<header class="site-header">
+  <div class="site-header__inner">
+
+    <a href="user_dashboard.html" class="brand" style="text-decoration:none;color:inherit;">
+      <span class="brand__logo"></span>
+      <span class="brand__name">TalentConnect</span>
+    </a>
+
+    <!-- Job seeker navbar -->
+    <nav style="display:flex; gap:12px;">
+      <a class="btn btn--ghost" href="user_dashboard.html">Dashboard</a>
+      <a class="btn btn--ghost" href="job_application.html">My Applications</a>
+      <a class="btn btn--ghost" href="user_profile.html">Profile</a>
+
+      <form action="../../Backend/user_signout.php" method="post">
+        <input type="submit" name="signout" value="Sign Out">
+      </form>
+    </nav>
+
+  </div>
+</header>
+
+
+<main class="container">
+  <div class="container-box">
+    <h1 class="card__title">My Applications</h1>
+    <p class="card__note">Track your job applications and their status.</p>
+
+    <section class="section-card">
+      <table>
+        <thead>
+          <tr>
+            <th>Company</th>
+            <th>Job Title</th>
+            <th>Status</th>
+            <th>Applied On</th>
+          </tr>
+        </thead>
+        <tbody id="appTable">
+
+          <!-- ==========================
+              DUMMY STATIC DATA (replace with PHP later)
+              ========================== -->
+          <tr>
+            <td>Google</td>
+            <td>Frontend Developer</td>
+            <td><span class="status accepted">Accepted</span></td>
+            <td>2025-01-12</td>
+          </tr>
+
+          <tr>
+            <td>Microsoft</td>
+            <td>Backend Engineer</td>
+            <td><span class="status pending">Pending</span></td>
+            <td>2025-01-15</td>
+          </tr>
+
+          <tr>
+            <td>Tesla</td>
+            <td>Software Intern</td>
+            <td><span class="status rejected">Rejected</span></td>
+            <td>2025-01-09</td>
+          </tr>
+
+          <tr>
+            <td>Amazon</td>
+            <td>Cloud Support Associate</td>
+            <td><span class="status pending">Pending</span></td>
+            <td>2025-01-11</td>
+          </tr>
+
+        </tbody>
+      </table>
+    </section>
+
+  </div>
+</main>
+
+
+<footer class="site-footer">© 2025 TalentConnect</footer>
+
+</body>
+</html>

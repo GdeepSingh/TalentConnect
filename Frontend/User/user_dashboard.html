@@ -6,6 +6,16 @@
 <link rel="stylesheet" href="../css/style.css"/>
 
 <style>
+   /* REMOVE ALL BACKGROUND SHAPES ONLY ON THIS PAGE */
+      body .bg-dot,
+      body .bg-shape {
+        display: none !important;
+      }
+
+      /* OPTIONAL: Set a clean plain background */
+      body {
+        background: #f8fafc !important;
+      }
 .job-card{
   border:1px solid var(--border);
   background:white;
@@ -29,6 +39,7 @@
 
     <nav style="display:flex;gap:12px;">
       <a class="btn btn--ghost" href="user_dashboard.html">Dashboard</a>
+      <a class="btn btn--ghost" href="job_application.html">My Applications</a>
       <a class="btn btn--ghost" href="user_profile.html">Profile</a>
       <a class="btn" href="login.html" onclick="localStorage.removeItem('tc_active_user')">Sign out</a>
     </nav>
