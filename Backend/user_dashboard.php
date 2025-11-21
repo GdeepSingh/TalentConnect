@@ -2,50 +2,49 @@
 include("database.php");
 session_start();
 
-if(!isset($_SESSION['uid'])){
-    echo json_encode(["success"=>false,"error"=>"Not logged in"]);
+if (!isset($_SESSION['uid'])) {
+    echo json_encode(["success" => false, "error" => "Not logged in"]);
     exit;
 }
 
 $uid = $_SESSION['uid'];
 
-// check resume
-$q = $conn->prepare("SELECT resume FROM users WHERE uid=?");
-$q->bind_param("i",$uid);
-$q->execute();
-$resume = $q->get_result()->fetch_assoc()['resume'];
+/* ---------------------------------------------------------
+   1️⃣ GET ALL JOBS THE USER HAS ALREADY APPLIED TO
+--------------------------------------------------------- */
+$q1 = $conn->prepare("SELECT job_id FROM job_application WHERE job_uid = ?");
+$q1->bind_param("i", $uid);
+$q1->execute();
+$appliedRes = $q1->get_result();
 
-// check experience
-$q2 = $conn->prepare("SELECT COUNT(*) AS total FROM work_experience WHERE user_id=?");
-$q2->bind_param("i",$uid);
-$q2->execute();
-$exp = $q2->get_result()->fetch_assoc()['total'];
-
-// check education
-$q3 = $conn->prepare("SELECT COUNT(*) AS total FROM education WHERE user_id=?");
-$q3->bind_param("i",$uid);
-$q3->execute();
-$edu = $q3->get_result()->fetch_assoc()['total'];
-
-// check skills
-$q4 = $conn->prepare("SELECT COUNT(*) AS total FROM skills WHERE user_id=?");
-$q4->bind_param("i",$uid);
-$q4->execute();
-$skills = $q4->get_result()->fetch_assoc()['total'];
-
-$ready = false;
-
-// conditions:
-if(!empty($resume)){
-    $ready = true;  // resume alone is enough
+$appliedJobs = [];
+while ($row = $appliedRes->fetch_assoc()) {
+    $appliedJobs[] = $row['job_id'];
 }
-else if($exp > 0 && $edu > 0 && $skills > 0){
-    $ready = true;  // all three profile sections present
+
+/* Build the SQL exclusion list */
+$excludeSql = "";
+if (!empty($appliedJobs)) {
+    $ids = implode(",", array_map('intval', $appliedJobs));
+    $excludeSql = "WHERE pid NOT IN ($ids)";
+}
+
+/* ---------------------------------------------------------
+   2️⃣ FETCH ALL JOBS THE USER HAS NOT APPLIED TO
+--------------------------------------------------------- */
+$query = "SELECT pid, title, location, jobtype FROM jobpost $excludeSql ORDER BY pid DESC";
+$stmt = $conn->prepare($query);
+$stmt->execute();
+$jobsRes = $stmt->get_result();
+
+$jobs = [];
+while ($row = $jobsRes->fetch_assoc()) {
+    $jobs[] = $row;
 }
 
 echo json_encode([
-    "success"=>true,
-    "ready"=>$ready
+    "success" => true,
+    "jobs" => $jobs
 ]);
 exit;
 ?>

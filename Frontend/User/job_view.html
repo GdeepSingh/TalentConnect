@@ -83,12 +83,15 @@ function formatJobType(type){
   };
   return map[type] || type;
 }
-
 function applyNow(jobId){
 
+  console.log("APPLY CLICKED → JOB:", jobId);  // DEBUG
+
   fetch("../../Backend/check_profile_ready.php")
-    .then(r=>r.json())
-    .then(d=>{
+    .then(r => r.json())
+    .then(d => {
+
+      console.log("READY CHECK:", d);  // DEBUG
 
       if(!d.success){
         alert("Error checking profile.");
@@ -100,12 +103,24 @@ function applyNow(jobId){
         return;
       }
 
-      // user is allowed → redirect to apply page
-      window.location.href = "apply_job.php?job=" + jobId;
+      // user allowed → NOW APPLY
+      fetch("../../Backend/apply_job.php?job=" + jobId)
+        .then(r => r.json())
+        .then(res => {
+
+          console.log("APPLY RESPONSE:", res);  // DEBUG
+
+          if(!res.success){
+            alert(res.error || "Unable to apply.");
+            return;
+          }
+
+          window.location.href = res.redirect;
+        });
 
     });
-
 }
+
 </script>
 
 </body>

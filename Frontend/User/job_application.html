@@ -48,9 +48,26 @@
       text-transform: capitalize;
     }
 
-    .status.accepted { color: green; }
-    .status.pending { color: orange; }
-    .status.rejected { color: red; }
+    .status {
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: white;
+}
+
+.status.accepted {
+  background: #16a34a;
+}
+
+.status.rejected {
+  background: #dc2626;
+}
+
+.status.pending {
+  background: #ca8a04;
+}
+
   </style>
 </head>
 
@@ -96,37 +113,6 @@
         </thead>
         <tbody id="appTable">
 
-          <!-- ==========================
-              DUMMY STATIC DATA (replace with PHP later)
-              ========================== -->
-          <tr>
-            <td>Google</td>
-            <td>Frontend Developer</td>
-            <td><span class="status accepted">Accepted</span></td>
-            <td>2025-01-12</td>
-          </tr>
-
-          <tr>
-            <td>Microsoft</td>
-            <td>Backend Engineer</td>
-            <td><span class="status pending">Pending</span></td>
-            <td>2025-01-15</td>
-          </tr>
-
-          <tr>
-            <td>Tesla</td>
-            <td>Software Intern</td>
-            <td><span class="status rejected">Rejected</span></td>
-            <td>2025-01-09</td>
-          </tr>
-
-          <tr>
-            <td>Amazon</td>
-            <td>Cloud Support Associate</td>
-            <td><span class="status pending">Pending</span></td>
-            <td>2025-01-11</td>
-          </tr>
-
         </tbody>
       </table>
     </section>
@@ -136,6 +122,48 @@
 
 
 <footer class="site-footer">© 2025 TalentConnect</footer>
+
+<script defer>
+document.addEventListener("DOMContentLoaded", loadApplications);
+
+function loadApplications() {
+  fetch("../../Backend/my_applications.php")
+    .then(res => res.json())
+    .then(data => {
+      const tbody = document.getElementById("appTable");
+      tbody.innerHTML = "";
+
+      if (!data.success || data.applications.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="4">No applications yet.</td></tr>`;
+        return;
+      }
+
+      data.applications.forEach(app => {
+
+        const statusClass = {
+          accepted: "status accepted",
+          rejected: "status rejected",
+          waitlist: "status pending",
+          progress: "status pending"
+        }[app.status] || "status pending";
+
+        tbody.innerHTML += `
+          <tr>
+            <td>${app.company}</td>
+            <td>${app.title}</td>
+            <td><span class="${statusClass}">${capitalize(app.status)}</span></td>
+            <td>${app.applied || "-"}</td>
+          </tr>
+        `;
+      });
+    });
+}
+
+function capitalize(str){
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+</script>
+
 
 </body>
 </html>

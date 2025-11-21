@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-<meta charset="UTF-8">
-<title>User Dashboard · TalentConnect</title>
-<link rel="stylesheet" href="../css/style.css"/>
+  <head>
+    <meta charset="UTF-8" />
+    <title>User Dashboard · TalentConnect</title>
+    <link rel="stylesheet" href="../css/style.css" />
 
-<style>
-   /* REMOVE ALL BACKGROUND SHAPES ONLY ON THIS PAGE */
+    <style>
+      /* REMOVE ALL BACKGROUND SHAPES ONLY ON THIS PAGE */
       body .bg-dot,
       body .bg-shape {
         display: none !important;
@@ -16,85 +16,104 @@
       body {
         background: #f8fafc !important;
       }
-.job-card{
-  border:1px solid var(--border);
-  background:white;
-  padding:1rem;
-  border-radius:10px;
-  margin-bottom:1rem;
-}
-.job-card h2{margin:0 0 .3rem;}
-.muted{color:#6b7280}
-</style>
-</head>
-
-<body>
-
-<header class="site-header">
-  <div class="site-header__inner">
-    <div class="brand">
-      <div class="brand__logo"></div>
-      <span class="brand__name">TalentConnect</span>
-    </div>
-
-    <nav style="display:flex;gap:12px;">
-      <a class="btn btn--ghost" href="user_dashboard.html">Dashboard</a>
-      <a class="btn btn--ghost" href="job_application.html">My Applications</a>
-      <a class="btn btn--ghost" href="user_profile.html">Profile</a>
-      <a class="btn" href="login.html" onclick="localStorage.removeItem('tc_active_user')">Sign out</a>
-    </nav>
-  </div>
-</header>
-
-<main class="container">
-  <h1 style="margin-bottom:1rem;">🔥 Available Jobs</h1>
-  <div id="jobList"></div>
-</main>
-
-<footer class="site-footer">© 2025 TalentConnect</footer>
-
-<script>
-document.addEventListener("DOMContentLoaded", loadJobs);
-
-function loadJobs(){
-
-  fetch("../../Backend/user_dashboard.php")
-    .then(res => res.json())
-    .then(data => {
-
-      const jobList = document.getElementById("jobList");
-      jobList.innerHTML = "";
-
-      if(!data.success || data.jobs.length === 0){
-        jobList.innerHTML = `<p class="muted">No jobs posted yet.</p>`;
-        return;
+      .job-card {
+        border: 1px solid var(--border);
+        background: white;
+        padding: 1rem;
+        border-radius: 10px;
+        margin-bottom: 1rem;
       }
+      .job-card h2 {
+        margin: 0 0 0.3rem;
+      }
+      .muted {
+        color: #6b7280;
+      }
+    </style>
+  </head>
 
-      jobList.innerHTML = data.jobs.map(job => `
-        <div class="job-card" onclick="openJob(${job.pid})" style="cursor:pointer;">
+  <body>
+    <header class="site-header">
+      <div class="site-header__inner">
+        <div class="brand">
+          <div class="brand__logo"></div>
+          <span class="brand__name">TalentConnect</span>
+        </div>
+
+        <nav style="display: flex; gap: 12px">
+          <a class="btn btn--ghost" href="user_dashboard.html">Dashboard</a>
+          <a class="btn btn--ghost" href="job_application.html"
+            >My Applications</a
+          >
+          <a class="btn btn--ghost" href="user_profile.html">Profile</a>
+          <a
+            class="btn"
+            href="login.html"
+            onclick="localStorage.removeItem('tc_active_user')"
+            >Sign out</a
+          >
+        </nav>
+      </div>
+    </header>
+
+    <main class="container">
+      <h1 style="margin-bottom: 1rem">🔥 Available Jobs</h1>
+      <div id="jobList"></div>
+    </main>
+
+    <footer class="site-footer">© 2025 TalentConnect</footer>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", loadJobs);
+
+      function loadJobs() {
+        fetch("../../Backend/user_dashboard.php")
+          .then((r) => r.json())
+          .then((data) => {
+            const jobList = document.getElementById("jobList");
+
+            if (!data.success) {
+              jobList.innerHTML = `<p class="muted">Error loading jobs.</p>`;
+              return;
+            }
+
+            if (data.jobs.length === 0) {
+              jobList.innerHTML = `<p class="muted">No jobs available.</p>`;
+              return;
+            }
+
+            jobList.innerHTML = data.jobs
+              .map(
+                (job) => `
+        <div class="job-card" onclick="openJob(${job.pid})">
           <h2>${job.title}</h2>
           <p class="muted">${job.location} · ${formatJobType(job.jobtype)}</p>
         </div>
-      `).join("");
+      `
+              )
+              .join("");
+          })
+          .catch(() => {
+            document.getElementById(
+              "jobList"
+            ).innerHTML = `<p class="muted">Failed to load jobs.</p>`;
+          });
+      }
 
-    });
-}
+      function openJob(id) {
+        window.location.href = "job_view.html?job=" + id;
+      }
 
-function openJob(id){
-  window.location.href = "job_view.html?job=" + id;
-}
-
-function formatJobType(type){
-  const map={
-    full_time:"Full-time",
-    part_time:"Part-time",
-    contract:"Contract",
-    internship:"Internship",
-    temporary:"Temporary"
-  };
-  return map[type] || type;
-}
-</script>
-
-</body>
+      function formatJobType(type) {
+        const m = {
+          full_time: "Full-time",
+          part_time: "Part-time",
+          contract: "Contract",
+          internship: "Internship",
+          temporary: "Temporary",
+        };
+        return m[type] || type;
+      }
+    </script>
+  </body>
 </html>
